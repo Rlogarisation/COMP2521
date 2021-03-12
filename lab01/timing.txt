@@ -1,0 +1,86 @@
+Input	Has	Initial	Number	AvgTime	AvgTime
+Size	Dups	Order	of runs	forusel	forsort
+10000	no	random	3	0.642sec	0.010sec
+10000	no	sorted	3	0.266sec	0.007sec
+10000	no	reverse	3	0.240sec	0.007sec
+10000	yes	random	3	0.697sec	0.011sec
+10000	yes	sorted	3	0.243sec	0.007sec
+10000	yes	reverse	3	0.252sec	0.007sec
+20000	no	random	3	4.100sec	0.021sec
+20000	no	sorted	3	0.799sec	0.012sec
+20000	no	reverse	3	0.786sec	0.012sec
+20000	yes	random	3	4.150sec	0.024sec
+20000	yes	sorted	3	0.841sec	0.012sec
+20000	yes	reverse	3	0.845sec	0.014sec
+40000	no	random	3	20.824sec	0.042sec
+40000	no	sorted	3	3.128sec	0.017sec
+40000	no	reverse	3	3.066sec	0.024sec
+40000	yes	random	3	20.711sec	0.045sec
+40000	yes	sorted	3	3.117sec	0.022sec
+40000	yes	reverse	3	3.203sec	0.027sec
+...
+
+Results and discussion:
+Overall, all average run times are exponentially increased,
+as the number of input sizes increased. 
+
+For group with random but not deplicated inputs,
+useIntList cost almost 5 to 6 times more when the input is doubled,
+but system sort only cost double. 
+Which is because the useIntList sorted the previous numbers 
+all the way of beginning, even when it is unneccessary.
+
+Sorted group cost less time than reverse group, 
+which is corresponded with our intrition,
+as sorted group do not require any operation other than scan,
+but inverted group need to move each number to the front.
+
+The duplicated sets do not have significant impact on the data based on table,
+since computer can treat duplicated same as all other none duplicated number.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Reference for original code:
+(a).
+seq 40000 | sort -R > randomOrderNoDuplicates
+time ./useIntList < randomOrderNoDuplicates > /dev/null
+
+time sort -n < randomOrderNoDuplicates > /dev/null
+
+(b).
+seq 40000 > alreadySortedNoDuplicates
+time ./useIntList < alreadySortedNoDuplicates > /dev/null
+
+time sort -n < alreadySortedNoDuplicates > /dev/null
+(c).
+seq 40000 | sort -nr > reverseSortedNoDuplicates
+time ./useIntList < reverseSortedNoDuplicates > /dev/null
+
+time sort -n < reverseSortedNoDuplicates > /dev/null
+(d).
+./randList 40000 > randomOrder
+time ./useIntList < randomOrder > /dev/null
+
+time sort -n < randomOrder > /dev/null
+(e).
+./randList 40000 | sort -n > alreadySorted
+time ./useIntList < alreadySorted > /dev/null
+
+time sort -n < alreadySorted > /dev/null
+(f).
+./randList 40000 | sort -nr > reverseSorted
+time ./useIntList < reverseSorted > /dev/null
+
+time sort -n < reverseSorted > /dev/null

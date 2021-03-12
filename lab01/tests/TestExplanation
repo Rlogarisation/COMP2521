@@ -1,0 +1,16 @@
+Different cases need to be considered:
+(a) empty list,[PASS]
+file 03
+(b) smallest value, [As we know, int type range is -2,147,483,648 to 2,147,483,647]
+(c) largest value, 
+file 07: 2147483647 1024 -2048 0 -2147483648 
+WILL FAIL EXPERIMENT:
+file 08: 2147483648 1024 -2147483649 [FAIL]
+(d) value somewhere in the middle,[PASS]
+file 01 and 02
+(f) Duplicated number,[PASS]
+file 04: 5 3 7 2 2 2 1 6 2 9
+(g) Double number. [FAIL][Because v is int type.]
+file 05: 0.1 0.3 0.7 0.5 1.7 1.9 6.76
+(h) Negative number.[PASS]
+file 06: -2 -5 -12 -21 -50 6 12 99
