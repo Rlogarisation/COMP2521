@@ -196,23 +196,28 @@ Record TreeNext(Tree t, Record r) {
 }
 
 Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf) {
-
+    // There is no exact match in the tree whatsoever.
     if (n == NULL) {
+        reachedLeaf = true;
         return;
     }
-    
+
     int cmp = t->compare(r, n->rec);
 
     if (cmp < 0) {
         doTreeNextSearch(t, n->left, r);
     }
     else if (cmp > 0) {
-        if (reachedLeaf == true) {
-            return n->rec;
-        }
         doTreeNextSearch(t, n->right, r);
     }
     else {
         return n->rec;
     }
+
+    // Locate the smallest record.
+    if (reachedLeaf == ture && cmp < 0) {
+        return n->rec;
+    }
+
+    
 }
