@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <assert.h>
 #include "List.h"
 #include "Record.h"
 #include "AVLTree.h"
@@ -29,6 +29,8 @@ static Record doTreeSearch(Tree t, Node n, Record rec);
 Tree doTreeInsert(Tree t, Node n, Record rec, bool result);
 void doTreeSearchBetween(Tree t, Node n, Record lower, Record upper, List l);
 Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf);
+Node rotateLeft(Tree t, Node n);
+Node rotateRight(Tree t, Node n);
 ////////////////////////////////////////////////////////////////////////
 
 static Node newNode(Record rec) {
@@ -123,9 +125,67 @@ bool TreeInsert(Tree t, Record rec) {
     return result;
 }
 
+// I think the return type tree is not necessary,
+// bool type possibility can be better,
+// so we could do one less input.
 Tree doTreeInsert(Tree t, Node n, Record rec, bool result) {
-    
+    // Initial a new node.
+    Node insertedNode = newNode(rec);
+    assert(t != NULL);
+    // Ending condition when successful found the desired location.
+    if (n->left == NULL && n->right == NULL) {
+        if (t->compare(n->rec, rec) > 0) { 
+            n->left = insertedNode;
+        }
+        else {
+            n->right = insertedNode;
+        }
+        result = true;
+    }
+    // If repeated number has been found in the tree.
+    else if (t->compare(n->rec, rec) == 0) {
+        result = false;
+        return t;
+    }
+    else {
+        // Find the location first.
+        if (t->compare(n->rec, rec) > 0) {
+            t = doTreeInsert(t, n->left, rec, result);
+        }
+        else {
+            t = doTreeInsert(t, n->right, rec, result);
+        }
+        // Check the balance of the tree,
+        // and rotate if necessary.
+        if (t->compare(n->left->rec, n->right->rec) > 1) {
+            if (t->compare(rec, n->left->rec) > 0) {
+                n->left = rotateLeft(t, n->left);
+            }
+            n = rotateRight(t, n);
+        }
+        else if (t->compare(n->right->rec, n->left->rec) > 1) {
+            if (t->compare(rec, n->right->rec) < 0) {
+                n->right = rotateRight(t, n->right);
+            }
+            n = rotateLeft(t, n);
+        }
+    }
+
     return t;
+}
+
+Node rotateLeft(Tree t, Node n) {
+    Node n1 = n->right;
+    n->right = n1->left;
+    n1->left = n;
+    return n1;
+}
+
+Node rotateRight(Tree t, Node n) {
+    Node n2 = n->left;
+    n->left = n2->right;
+    n2->right = n;
+    return n2;
 }
 
 
