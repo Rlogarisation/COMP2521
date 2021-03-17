@@ -13,6 +13,12 @@ typedef struct BSTNode {
 	BSTree right;
 } BSTNode;
 
+
+// Complete the main function, use break point to check how 
+// the function is proceed.
+
+
+
 // computes the height of a tree
 int BSTreeHeight(BSTree t) {
     // When there is only one root node in the tree,
@@ -29,6 +35,7 @@ int BSTreeHeight(BSTree t) {
                     O   O O   O     return (1 + -1) == 0
                                     NULL return -1
         */
+       // What is the value of lh and rh?????
         int lh = BSTreeHeight(t->left);
 		int rh = BSTreeHeight(t->right);
         // if (lh > rh) then return 1 + lh, else return 1 + rh.

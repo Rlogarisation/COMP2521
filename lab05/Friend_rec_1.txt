@@ -1,0 +1,20 @@
++ A
++ B
++ C
++ D
++ E
++ F
++ G
++ H
+f A B
+f A C
+f A F
+f B D
+f C D
+f D F
+f B E
+f C E
+f G F
+f H F
+m A D
+r A

@@ -121,8 +121,8 @@ and return them in a list in increasing order of zid.
 */
 List DbFindByName(StudentDb db, char *familyName, char *givenName) {
 
-    Record dummyLower = RecordNew(519, familyName, givenName - 1);
-    Record dummyUpper = RecordNew(520, familyName, givenName);
+    Record dummyLower = RecordNew(MIN_ZID, familyName, givenName);
+    Record dummyUpper = RecordNew(MAX_ZID, familyName, givenName);
     List l = TreeSearchBetween(db->byName, dummyLower, dummyUpper);
     RecordFree(dummyLower);
     RecordFree(dummyUpper);

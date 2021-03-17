@@ -1,0 +1,12 @@
++ Roger
++ A
++ B
++ C
++ D
+f Roger B
+f Roger C
+f A B
+f A C
+f A D
+m Roger A
+r Roger
