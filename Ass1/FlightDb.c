@@ -15,7 +15,8 @@ struct flightDb {
 // Assuming we only need to compare flightNumber first.
 // return positive if r1 is greater than r2, and vice versa.
 int compareByFlightNumber(Record r1, Record r2) {
-	int cmp = strcmp(r1->flightNumber, r2->flightNumber);
+	int cmp = strcmp(RecordGetFlightNumber(r1), RecordGetFlightNumber(r2));
+	
 	return cmp;
 }
 

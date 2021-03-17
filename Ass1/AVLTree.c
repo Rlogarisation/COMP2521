@@ -128,6 +128,11 @@ bool TreeInsert(Tree t, Record rec) {
 // I think the return type tree is not necessary,
 // bool type possibility can be better,
 // so we could do one less input.
+
+
+// We have a height option in each node, must use that.
+
+
 Tree doTreeInsert(Tree t, Node n, Record rec, bool result) {
     // Initial a new node.
     Node insertedNode = newNode(rec);
