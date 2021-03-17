@@ -26,9 +26,9 @@ struct tree {
 static void doTreeFree(Node n, bool freeRecords);
 static Node newNode(Record rec);
 static Record doTreeSearch(Tree t, Node n, Record rec);
-static Tree doTreeInsert(Tree t, Node n, Record rec, bool *result)
-static void doTreeSearchBetween(Tree t, Node n, Record lower, Record upper, List l);
-static Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf);
+Tree doTreeInsert(Tree t, Node n, Record rec, bool result);
+void doTreeSearchBetween(Tree t, Node n, Record lower, Record upper, List l);
+Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf);
 ////////////////////////////////////////////////////////////////////////
 
 static Node newNode(Record rec) {
@@ -119,12 +119,12 @@ static Record doTreeSearch(Tree t, Node n, Record rec) {
  */
 bool TreeInsert(Tree t, Record rec) {
     bool result = false;
-    t = doTreeInsert(t, t->root, rec, result)
+    t = doTreeInsert(t, t->root, rec, result);
     return result;
 }
 
-static Tree doTreeInsert(Tree t, Node n, Record rec, bool *result) {
-
+Tree doTreeInsert(Tree t, Node n, Record rec, bool result) {
+    
     return t;
 }
 
@@ -145,7 +145,7 @@ List TreeSearchBetween(Tree t, Record lower, Record upper) {
     return l;
 }
 
-static void doTreeSearchBetween(Tree t, Node n, 
+void doTreeSearchBetween(Tree t, Node n, 
                                 Record lower, Record upper, List l) {
     // Ending condition
     if (n == NULL) {
@@ -186,29 +186,28 @@ Record TreeNext(Tree t, Record r) {
     return doTreeNextSearch(t, t->root, r, reachedLeaf);
 }
 
-static Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf) {
+Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf) {
     // There is no exact match in the tree whatsoever.
     if (n == NULL) {
         reachedLeaf = true;
-        return;
+        return 0;
     }
 
     int cmp = t->compare(r, n->rec);
 
     if (cmp < 0) {
-        doTreeNextSearch(t, n->left, r);
+        doTreeNextSearch(t, n->left, r, reachedLeaf);
     }
     else if (cmp > 0) {
-        doTreeNextSearch(t, n->right, r);
+        doTreeNextSearch(t, n->right, r, reachedLeaf);
     }
     else {
         return n->rec;
     }
 
     // Locate the smallest record.
-    if (reachedLeaf == ture && cmp < 0) {
+    if (reachedLeaf == true && cmp < 0) {
         return n->rec;
     }
-
-    
+    return 0;
 }
