@@ -26,9 +26,9 @@ struct tree {
 static void doTreeFree(Node n, bool freeRecords);
 static Node newNode(Record rec);
 static Record doTreeSearch(Tree t, Node n, Record rec);
-static void doTreeSearchBetween(Tree t, Node n, 
-                                Record lower, Record upper, List l);
-Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf);
+static Tree doTreeInsert(Tree t, Node n, Record rec, bool *result)
+static void doTreeSearchBetween(Tree t, Node n, Record lower, Record upper, List l);
+static Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf);
 ////////////////////////////////////////////////////////////////////////
 
 static Node newNode(Record rec) {
@@ -118,23 +118,14 @@ static Record doTreeSearch(Tree t, Node n, Record rec) {
  * the tree (according to the comparison function).
  */
 bool TreeInsert(Tree t, Record rec) {
-    /*
-    // Create a new inserted node.
-    Node insertedNode = newNode(rec);
-    int comparedResult = t->compare(t->root->rec, rec);
-    // Considering tree is empty.
-    if (t == NULL) {
-        t->root = insertedNode;
-        return true;
-    }
-    // Considering root is same as record
-    else if (comparedResult == 0) {
-        return false;
-    }
-    else {
-        
-    }
-    */
+    bool result = false;
+    t = doTreeInsert(t, t->root, rec, result)
+    return result;
+}
+
+static Tree doTreeInsert(Tree t, Node n, Record rec, bool *result) {
+
+    return t;
 }
 
 
@@ -195,7 +186,7 @@ Record TreeNext(Tree t, Record r) {
     return doTreeNextSearch(t, t->root, r, reachedLeaf);
 }
 
-Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf) {
+static Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf) {
     // There is no exact match in the tree whatsoever.
     if (n == NULL) {
         reachedLeaf = true;
