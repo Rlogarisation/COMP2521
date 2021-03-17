@@ -2,6 +2,7 @@
     "files.associations": {
         "stdio.h": "c",
         "stdlib.h": "c",
-        "queue.h": "c"
+        "queue.h": "c",
+        "avltree.h": "c"
     }
 }

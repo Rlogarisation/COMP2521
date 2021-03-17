@@ -11,6 +11,13 @@ struct flightDb {
 	// TODO: Add to this struct
 };
 
+
+// Assuming we only need to compare flightNumber first.
+// return positive if r1 is greater than r2, and vice versa.
+int compareByFlightNumber(Record r1, Record r2) {
+	return strcmp(r1->flightNumber, r2->flightNumber);
+}
+
 /**
  * Creates a new flight DB. 
  * You MUST use the AVLTree ADT (from Task 1) in your implementation.

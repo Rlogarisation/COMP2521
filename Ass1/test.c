@@ -51,7 +51,7 @@ FlightDb getFlightDb_test1() {
 int main(int argc, char *argv[]) {
 
     FlightDb db = getFlightDb_test1(); 
-
+    (void) db;
 }
 
 ////////////////////////////////////////////////////////////////////////

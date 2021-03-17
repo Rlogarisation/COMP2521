@@ -26,7 +26,9 @@ struct tree {
 static void doTreeFree(Node n, bool freeRecords);
 static Node newNode(Record rec);
 static Record doTreeSearch(Tree t, Node n, Record rec);
-
+static void doTreeSearchBetween(Tree t, Node n, 
+                                Record lower, Record upper, List l);
+Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf);
 ////////////////////////////////////////////////////////////////////////
 
 static Node newNode(Record rec) {
@@ -106,23 +108,111 @@ static Record doTreeSearch(Tree t, Node n, Record rec) {
 ////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////
-
+/**
+ * Inserts the given record into the AVL tree.
+ * You  must use the proper AVL insertion algorithm, as discussed in the
+ * lectures.
+ * The time complexity of this function must be O(log n).
+ * Returns true if the record was inserted  successfully,  or  false  if
+ * there was already a record that compares equal to the given record in
+ * the tree (according to the comparison function).
+ */
 bool TreeInsert(Tree t, Record rec) {
-    // TODO: Complete this function
-    return false;
+    /*
+    // Create a new inserted node.
+    Node insertedNode = newNode(rec);
+    int comparedResult = t->compare(t->root->rec, rec);
+    // Considering tree is empty.
+    if (t == NULL) {
+        t->root = insertedNode;
+        return true;
+    }
+    // Considering root is same as record
+    else if (comparedResult == 0) {
+        return false;
+    }
+    else {
+        
+    }
+    */
 }
 
+
 ////////////////////////////////////////////////////////////////////////
+
+/**
+ * Searches  for  all  records  between the two given records, inclusive
+ * (according to the comparison function) and returns the records  in  a
+ * list in order. Assumes that `lower` is less than `upper`.
+ * The time complexity of this function must be O(log n + m), where m is
+ * the length of the returned list.
+ */
 
 List TreeSearchBetween(Tree t, Record lower, Record upper) {
-    // TODO: Complete this function
-    return ListNew();
+    List l = ListNew();
+    doTreeSearchBetween(t, t->root, lower, upper, l);
+    return l;
+}
+
+static void doTreeSearchBetween(Tree t, Node n, 
+                                Record lower, Record upper, List l) {
+    // Ending condition
+    if (n == NULL) {
+        return;
+    }
+    int lowerCmp = t->compare(n->rec, lower);
+    int upperCmp = t->compare(n->rec, upper);
+    
+    // For sorted list: Inorder search must applied.
+    // In order to visit minimum nodes:
+    // No necessary to visit left subtree,
+    // as left subtree will all smaller than current, which < lower,
+    // so go to right if current is smaller than lower
+    if (lowerCmp < 0) { 
+        doTreeSearchBetween(t, n->right, lower, upper, l);
+    }
+    // Go to left if current is larger than upper
+    else if (upperCmp > 0) {
+        doTreeSearchBetween(t, n->left, lower, upper, l);
+        
+    }
+    else {
+        doTreeSearchBetween(t, n->left, lower, upper, l);
+        ListAppend(l, n->rec);
+        doTreeSearchBetween(t, n->right, lower, upper, l);
+    }
+
 }
 
 ////////////////////////////////////////////////////////////////////////
-
+/**
+ * Returns a smallest record greater than or equal to the given record r
+ * (according to the comparision function).
+ * Time complexity of the function must be O(log n).
+ */
 Record TreeNext(Tree t, Record r) {
-    // TODO: Complete this function
-    return NULL;
+    int reachedLeaf = false;
+    return doTreeNextSearch(t, t->root, r, reachedLeaf);
 }
 
+Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf) {
+
+    if (n == NULL) {
+        return;
+    }
+    
+    int cmp = t->compare(r, n->rec);
+
+    if (cmp < 0) {
+        doTreeNextSearch(t, n->left, r);
+    }
+    else if (cmp > 0) {
+        if (reachedLeaf == true) {
+            return n->rec;
+        }
+        doTreeNextSearch(t, n->right, r);
+    }
+    else {
+        return n->rec;
+    }
+}
