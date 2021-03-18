@@ -145,7 +145,9 @@ Tree doTreeInsert(Tree t, Node n, Record rec, bool result) {
         else {
             n->right = insertedNode;
         }
+        
         result = true;
+        
     }
     // If repeated number has been found in the tree.
     else if (t->compare(n->rec, rec) == 0) {

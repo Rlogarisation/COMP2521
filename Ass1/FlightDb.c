@@ -8,16 +8,49 @@
 #include "AVLTree.h"
 
 struct flightDb {
-	// TODO: Add to this struct
+	Tree byFlightNumber;
 };
 
+////////////////////////////////////////////////////////////////////////
+// Comparison functions
 
-// Assuming we only need to compare flightNumber first.
-// return positive if r1 is greater than r2, and vice versa.
+// flight number, departure airport, day, hour and minute.
 int compareByFlightNumber(Record r1, Record r2) {
-	int cmp = strcmp(RecordGetFlightNumber(r1), RecordGetFlightNumber(r2));
+	int cmpFlightNum = 
+	strcmp(RecordGetFlightNumber(r1), RecordGetFlightNumber(r2));
+	int cmpDepAirport = 
+	strcmp(RecordGetDepartureAirport(r1), RecordGetDepartureAirport(r2));
+	int cmpDay = RecordGetDepartureDay(r1) - RecordGetDepartureDay(r2);
+	int cmpHour = RecordGetDepartureHour(r1) - RecordGetDepartureHour(r2);
+	int cmpMin = RecordGetDepartureMinute(r1) - RecordGetDepartureMinute(r2);
+
+
+	if (cmpFlightNum == 0) {
+		// Departure airport
+		if (cmpDepAirport == 0) {
+			// day
+			if (cmpDay == 0) {
+				// Hour
+				if (cmpHour == 0) {
+					// Minite
+					return cmpMin;
+				}
+				else {
+					return cmpHour;
+				}
+			}
+			else {
+				return cmpDay;
+			}
+		}
+		else {
+			return cmpDepAirport;
+		}
+	}
+	else {
+		return cmpFlightNum;
+	}
 	
-	return cmp;
 }
 
 /**
@@ -25,15 +58,22 @@ int compareByFlightNumber(Record r1, Record r2) {
  * You MUST use the AVLTree ADT (from Task 1) in your implementation.
  */
 FlightDb DbNew(void) {
-	// TODO: Complete this function
-	return NULL;
+	FlightDb db = malloc(sizeof(*db));
+	if (db == NULL) {
+		fprintf(stderr, "error: out of memory\n");
+        exit(EXIT_FAILURE);
+	}
+
+	db->byFlightNumber = TreeNew(compareByFlightNumber);
+	return db;
 }
 
 /**
  * Frees all memory allocated to the given flight DB
  */
 void     DbFree(FlightDb db) {
-	// TODO: Complete this function
+	TreeFree(db->byFlightNumber, true);
+	free(db);
 }
 
 /**
@@ -49,8 +89,12 @@ void     DbFree(FlightDb db) {
  * You MUST use the AVLTree ADT (from Task 1) in your implementation.
  */
 bool     DbInsertRecord(FlightDb db, Record r) {
-	// TODO: Complete this function
-	return false;
+	if (TreeInsert(db->byFlightNumber, r) == true) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 /**
@@ -64,8 +108,19 @@ bool     DbInsertRecord(FlightDb db, Record r) {
  * You MUST use the AVLTree ADT (from Task 1) in your implementation.
  */
 List     DbFindByFlightNumber(FlightDb db, char *flightNumber) {
-	// TODO: Complete this function
-	return ListNew();
+	List l = ListNew();
+	/*
+	RecordNew(char *flightNumber,  
+                 char *departureAirport, char *arrivalAirport, 
+                 int departureDay, int departureHour, int departureMinute,
+                 int durationMinutes);
+	*/
+	RecordNew dummyLower = RecordNew(flightNumber, "", "", 0, 0, 0, 0);
+	RecordNew dummyUpper = RecordNew(flightNumber, "", "", 6, 23, 59, 9999);
+	l = TreeSearchBetween(db->byFlightNumber, dummyLower, dummyUpper);
+	RecordFree(dummyLower);
+	RecordFree(dummyUpper);
+	return l;
 }
 
 /**
