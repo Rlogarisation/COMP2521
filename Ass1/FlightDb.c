@@ -8,11 +8,17 @@
 #include "AVLTree.h"
 
 struct flightDb {
+	Tree byFlightNumberOnly;
 	Tree byFlightNumber;
+
 };
 
 ////////////////////////////////////////////////////////////////////////
 // Comparison functions
+
+int compareByFlightNumberOnly(Record r1, Record r2) {
+	return strcmp(RecordGetFlightNumber(r1), RecordGetFlightNumber(r2));
+}
 
 // flight number, departure airport, day, hour and minute.
 int compareByFlightNumber(Record r1, Record r2) {
@@ -65,6 +71,7 @@ FlightDb DbNew(void) {
 	}
 
 	db->byFlightNumber = TreeNew(compareByFlightNumber);
+	db->byFlightNumberOnly = TreeNew(compareByFlightNumberOnly);
 	return db;
 }
 
@@ -73,6 +80,7 @@ FlightDb DbNew(void) {
  */
 void     DbFree(FlightDb db) {
 	TreeFree(db->byFlightNumber, true);
+	TreeFree(db->byFlightNumberOnly, true);
 	free(db);
 }
 
@@ -90,6 +98,7 @@ void     DbFree(FlightDb db) {
  */
 bool     DbInsertRecord(FlightDb db, Record r) {
 	if (TreeInsert(db->byFlightNumber, r) == true) {
+		//TreeInsert(db->byFlightNumberOnly, r);
 		return true;
 	}
 	else {
@@ -117,7 +126,7 @@ List     DbFindByFlightNumber(FlightDb db, char *flightNumber) {
 	*/
 	Record dummyLower = RecordNew(flightNumber, "", "", 0, 0, 0, 0);
 	Record dummyUpper = RecordNew(flightNumber, "", "", 6, 23, 59, 9999);
-	l = TreeSearchBetween(db->byFlightNumber, dummyLower, dummyUpper);
+	l = TreeSearchBetween(db->byFlightNumberOnly, dummyLower, dummyUpper);
 	RecordFree(dummyLower);
 	RecordFree(dummyUpper);
 	return l;

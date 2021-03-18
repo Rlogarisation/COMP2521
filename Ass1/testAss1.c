@@ -149,6 +149,8 @@ static void doTestDbFindByFlightNumber(FlightDb db, char *flightNumber) {
            flightNumber);
     
     List l = DbFindByFlightNumber(db, flightNumber);
+
+
     
     if (ListSize(l) == 0) {
         printf("No flights found\n");
@@ -315,9 +317,9 @@ static FlightDb createSampleDb(void) {
     DbInsertRecord(db, RecordNew("QF409", "SYD", "MEL", 6,  7,  5,  90));
 
     // QF419 from SYD to MEL
-    DbInsertRecord(db, RecordNew("QF409", "SYD", "MEL", 0,  8,  0,  90));
-    DbInsertRecord(db, RecordNew("QF409", "SYD", "MEL", 2,  8,  0,  90));
-    DbInsertRecord(db, RecordNew("QF409", "SYD", "MEL", 5,  8,  0,  90));
+    DbInsertRecord(db, RecordNew("QF419", "SYD", "MEL", 0,  8,  0,  90));
+    DbInsertRecord(db, RecordNew("QF419", "SYD", "MEL", 2,  8,  0,  90));
+    DbInsertRecord(db, RecordNew("QF419", "SYD", "MEL", 5,  8,  0,  90));
 
     // VA323 from MEL to BNE
     DbInsertRecord(db, RecordNew("VA323", "MEL", "BNE", 1, 11,  0, 110));

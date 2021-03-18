@@ -32,6 +32,7 @@ Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf);
 int TreeHeight(Node n);
 Node rotateLeft(Node n);
 Node rotateRight(Node n);
+void printMatrix(Tree t, Node n);
 ////////////////////////////////////////////////////////////////////////
 
 static Node newNode(Record rec) {
@@ -121,9 +122,28 @@ static Record doTreeSearch(Tree t, Node n, Record rec) {
  * the tree (according to the comparison function).
  */
 bool TreeInsert(Tree t, Record rec) {
+    // printf("Inserted:\n");
+    // RecordShow(rec);
+    // printf("\n");
     bool result = false;
-    doTreeInsert(t, t->root, rec, &result);
+    t->root = doTreeInsert(t, t->root, rec, &result);
+    // RecordShow(n->rec);
+    // printf("\n%d\n", result);
+    printMatrix(t, t->root);
+    printf("End\n");
     return result;
+}
+
+void printMatrix(Tree t, Node n) {
+    if (n == NULL) {
+        return;
+    }
+
+    printMatrix(t, n->left);
+    RecordShow(n->rec);
+    printf("\n");
+    printMatrix(t, n->right);
+
 }
 
 // I think the return type tree is not necessary,
@@ -137,12 +157,7 @@ bool TreeInsert(Tree t, Record rec) {
 Node doTreeInsert(Tree t, Node n, Record rec, bool *result) {
     // Ending condition when successful found the desired location.
     if (n == NULL) {
-        if (t->root == NULL) {
-            t->root = newNode(rec);
-        }
-        else {
-            n = newNode(rec);
-        }
+        return newNode(rec);
         *result = true;
     }
     // If repeated number has been found in the tree.
@@ -257,6 +272,7 @@ void doTreeSearchBetween(Tree t, Node n,
         ListAppend(l, n->rec);
         doTreeSearchBetween(t, n->right, lower, upper, l);
     }
+    return;
 
 }
 
