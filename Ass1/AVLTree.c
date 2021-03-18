@@ -170,7 +170,7 @@ Node doTreeInsert(Tree t, Node n, Record rec, bool *result) {
                 n = rotateRight(n->right);
             }
         }
-        else if (LHeight - RHeight < 1) {
+        else if (RHeight - LHeight > 1) {
             if (t->compare(n->right->rec, rec) > 0) {
                 n->right = rotateRight(n->right);
             }
@@ -194,6 +194,9 @@ int TreeHeight(Node n) {
 }
 
 Node rotateLeft(Node n) {
+    if (n == NULL || n->right == NULL) {
+        return n;
+    }
     Node n1 = n->right;
     n->right = n1->left;
     n1->left = n;
@@ -201,6 +204,9 @@ Node rotateLeft(Node n) {
 }
 
 Node rotateRight(Node n) {
+    if (n == NULL || n->left == NULL) {
+        return n;
+    }
     Node n2 = n->left;
     n->left = n2->right;
     n2->right = n;
