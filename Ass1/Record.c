@@ -1,4 +1,5 @@
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +15,8 @@ struct record {
     int departureMinute; // Between 0 to 59 (inclusive)
     int durationMinutes; // Duration of the flight, in minutes
 };
+
+static char *dayToName(int day);
 
 Record RecordNew(char *flightNumber,  
                  char *departureAirport, char *arrivalAirport, 
@@ -113,6 +116,20 @@ char *RecordGetArrivalAirport(Record r) {
 
 void RecordShow(Record r) {
 	// implement this if you want to debug (optional)
-	return;
+	printf("%s|%s|%s|%s %02d%02d|%d",
+	       r->flightNumber, r->departureAirport, r->arrivalAirport,
+	       dayToName(r->departureDay), r->departureHour,
+	       r->departureMinute, r->durationMinutes);
+}
+
+static char *dayToName(int day) {
+    assert(day >= 0 && day <= 6);
+    
+    char *days[] = {
+        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
+        "Saturday", "Sunday"
+    };
+    
+    return days[day];
 }
 

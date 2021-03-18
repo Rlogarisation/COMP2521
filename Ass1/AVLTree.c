@@ -26,11 +26,12 @@ struct tree {
 static void doTreeFree(Node n, bool freeRecords);
 static Node newNode(Record rec);
 static Record doTreeSearch(Tree t, Node n, Record rec);
-Node doTreeInsert(Tree t, Node n, Record rec, bool result);
+Node doTreeInsert(Tree t, Node n, Record rec, bool *result);
 void doTreeSearchBetween(Tree t, Node n, Record lower, Record upper, List l);
 Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf);
-Node rotateLeft(Tree t, Node n);
-Node rotateRight(Tree t, Node n);
+int TreeHeight(Node n);
+Node rotateLeft(Node n);
+Node rotateRight(Node n);
 ////////////////////////////////////////////////////////////////////////
 
 static Node newNode(Record rec) {
@@ -121,7 +122,7 @@ static Record doTreeSearch(Tree t, Node n, Record rec) {
  */
 bool TreeInsert(Tree t, Record rec) {
     bool result = false;
-    doTreeInsert(t, t->root, rec, result);
+    doTreeInsert(t, t->root, rec, &result);
     return result;
 }
 
@@ -133,7 +134,7 @@ bool TreeInsert(Tree t, Record rec) {
 // We have a height option in each node, must use that.
 
 
-Node doTreeInsert(Tree t, Node n, Record rec, bool result) {
+Node doTreeInsert(Tree t, Node n, Record rec, bool *result) {
     // Ending condition when successful found the desired location.
     if (n == NULL) {
         if (t->root == NULL) {
@@ -142,11 +143,11 @@ Node doTreeInsert(Tree t, Node n, Record rec, bool result) {
         else {
             n = newNode(rec);
         }
-        result = true;
+        *result = true;
     }
     // If repeated number has been found in the tree.
     else if (t->compare(n->rec, rec) == 0) {
-        result = false;
+        *result = false;
     }
     else {
         // Find the location first.
@@ -158,33 +159,48 @@ Node doTreeInsert(Tree t, Node n, Record rec, bool result) {
         }
         // Check the balance of the tree,
         // and rotate if necessary.
-        /*
-        if (t->compare(n->left->rec, n->right->rec) > 1) {
-            if (t->compare(rec, n->left->rec) > 0) {
-                n->left = rotateLeft(t, n->left);
+        int LHeight = TreeHeight(n->left);
+        int RHeight = TreeHeight(n->right);
+        
+        if (LHeight - RHeight > 1) {
+            if (t->compare(n->left->rec, rec) < 0) {
+                n->left = rotateLeft(n->left);
             }
-            n = rotateRight(t, n);
-        }
-        else if (t->compare(n->right->rec, n->left->rec) > 1) {
-            if (t->compare(rec, n->right->rec) < 0) {
-                n->right = rotateRight(t, n->right);
+            else {
+                n = rotateRight(n->right);
             }
-            n = rotateLeft(t, n);
         }
-        */
+        else if (LHeight - RHeight < 1) {
+            if (t->compare(n->right->rec, rec) > 0) {
+                n->right = rotateRight(n->right);
+            }
+            else {
+                n = rotateLeft(n);
+            }
+        }
     }
     return n;
 
 }
 
-Node rotateLeft(Tree t, Node n) {
+int TreeHeight(Node n) {
+    if (n == NULL) {
+        return -1;
+    }
+
+    int lh = TreeHeight(n->left);
+    int rh = TreeHeight(n->right);
+    return 1 + ((lh > rh) ? lh : rh);
+}
+
+Node rotateLeft(Node n) {
     Node n1 = n->right;
     n->right = n1->left;
     n1->left = n;
     return n1;
 }
 
-Node rotateRight(Tree t, Node n) {
+Node rotateRight(Node n) {
     Node n2 = n->left;
     n->left = n2->right;
     n2->right = n;
