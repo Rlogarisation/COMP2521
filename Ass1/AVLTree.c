@@ -145,15 +145,6 @@ void printMatrix(Tree t, Node n) {
     printMatrix(t, n->right);
 
 }
-
-// I think the return type tree is not necessary,
-// bool type possibility can be better,
-// so we could do one less input.
-
-
-// We have a height option in each node, must use that.
-
-
 Node doTreeInsert(Tree t, Node n, Record rec, bool *result) {
     // Ending condition when successful found the desired location.
     if (n == NULL) {
@@ -179,18 +170,19 @@ Node doTreeInsert(Tree t, Node n, Record rec, bool *result) {
         
         if (LHeight - RHeight > 1) {
             if (t->compare(n->left->rec, rec) < 0) {
-                n->left = rotateLeft(n->left);
+                return rotateLeft(n->left);
+                
             }
             else {
-                n = rotateRight(n->right);
+                return rotateRight(n->right);
             }
         }
         else if (RHeight - LHeight > 1) {
             if (t->compare(n->right->rec, rec) > 0) {
-                n->right = rotateRight(n->right);
+                return rotateRight(n->right);
             }
             else {
-                n = rotateLeft(n);
+                return rotateLeft(n);
             }
         }
     }

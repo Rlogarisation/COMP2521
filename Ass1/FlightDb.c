@@ -117,7 +117,6 @@ bool     DbInsertRecord(FlightDb db, Record r) {
  * You MUST use the AVLTree ADT (from Task 1) in your implementation.
  */
 List     DbFindByFlightNumber(FlightDb db, char *flightNumber) {
-	List l = ListNew();
 	/*
 	RecordNew(char *flightNumber,  
                  char *departureAirport, char *arrivalAirport, 
@@ -125,8 +124,8 @@ List     DbFindByFlightNumber(FlightDb db, char *flightNumber) {
                  int durationMinutes);
 	*/
 	Record dummyLower = RecordNew(flightNumber, "", "", 0, 0, 0, 0);
-	Record dummyUpper = RecordNew(flightNumber, "", "", 6, 23, 59, 9999);
-	l = TreeSearchBetween(db->byFlightNumberOnly, dummyLower, dummyUpper);
+	Record dummyUpper = RecordNew(flightNumber, "zzzzzzz", "zzzzzzz", 6, 23, 59, 9999);
+	List l = TreeSearchBetween(db->byFlightNumber, dummyLower, dummyUpper);
 	RecordFree(dummyLower);
 	RecordFree(dummyUpper);
 	return l;
