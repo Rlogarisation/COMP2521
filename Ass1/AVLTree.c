@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
+
 #include "List.h"
 #include "Record.h"
 #include "AVLTree.h"
@@ -26,7 +26,7 @@ struct tree {
 static void doTreeFree(Node n, bool freeRecords);
 static Node newNode(Record rec);
 static Record doTreeSearch(Tree t, Node n, Record rec);
-Tree doTreeInsert(Tree t, Node n, Record rec, bool result);
+Node doTreeInsert(Tree t, Node n, Record rec, bool result);
 void doTreeSearchBetween(Tree t, Node n, Record lower, Record upper, List l);
 Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf);
 Node rotateLeft(Tree t, Node n);
@@ -121,7 +121,7 @@ static Record doTreeSearch(Tree t, Node n, Record rec) {
  */
 bool TreeInsert(Tree t, Record rec) {
     bool result = false;
-    t = doTreeInsert(t, t->root, rec, result);
+    doTreeInsert(t, t->root, rec, result);
     return result;
 }
 
@@ -133,37 +133,32 @@ bool TreeInsert(Tree t, Record rec) {
 // We have a height option in each node, must use that.
 
 
-Tree doTreeInsert(Tree t, Node n, Record rec, bool result) {
-    // Initial a new node.
-    Node insertedNode = newNode(rec);
-    assert(t != NULL);
+Node doTreeInsert(Tree t, Node n, Record rec, bool result) {
     // Ending condition when successful found the desired location.
-    if (n->left == NULL && n->right == NULL) {
-        if (t->compare(n->rec, rec) > 0) { 
-            n->left = insertedNode;
+    if (n == NULL) {
+        if (t->root == NULL) {
+            t->root = newNode(rec);
         }
         else {
-            n->right = insertedNode;
+            n = newNode(rec);
         }
-        
         result = true;
-        
     }
     // If repeated number has been found in the tree.
     else if (t->compare(n->rec, rec) == 0) {
         result = false;
-        return t;
     }
     else {
         // Find the location first.
         if (t->compare(n->rec, rec) > 0) {
-            t = doTreeInsert(t, n->left, rec, result);
+            n->left = doTreeInsert(t, n->left, rec, result);
         }
         else {
-            t = doTreeInsert(t, n->right, rec, result);
+            n->right = doTreeInsert(t, n->right, rec, result);
         }
         // Check the balance of the tree,
         // and rotate if necessary.
+        /*
         if (t->compare(n->left->rec, n->right->rec) > 1) {
             if (t->compare(rec, n->left->rec) > 0) {
                 n->left = rotateLeft(t, n->left);
@@ -176,9 +171,10 @@ Tree doTreeInsert(Tree t, Node n, Record rec, bool result) {
             }
             n = rotateLeft(t, n);
         }
+        */
     }
+    return n;
 
-    return t;
 }
 
 Node rotateLeft(Tree t, Node n) {

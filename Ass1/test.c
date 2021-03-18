@@ -19,7 +19,7 @@ FlightDb getFlightDb_test1() {
     bool result = false;
 
     FlightDb fldb = DbNew();
-
+    printf("%d\n", result);
     // Daily flights QF409 at 07:05 from SYD to MEL
     result = DbInsertRecord(fldb, RecordNew("QF409", "SYD", "MEL", 0, 7, 05, 90));
     result = DbInsertRecord(fldb, RecordNew("QF409", "SYD", "MEL", 1, 7, 05, 90));
@@ -28,7 +28,7 @@ FlightDb getFlightDb_test1() {
     result = DbInsertRecord(fldb, RecordNew("QF409", "SYD", "MEL", 4, 7, 05, 90));
     result = DbInsertRecord(fldb, RecordNew("QF409", "SYD", "MEL", 5, 7, 05, 90));
     result = DbInsertRecord(fldb, RecordNew("QF409", "SYD", "MEL", 6, 7, 05, 90));
-
+    
     // Three flights QF419 at 08:00 from SYD to MEL
     result = DbInsertRecord(fldb, RecordNew("QF409", "SYD", "MEL", 0, 8, 00, 90));
     result = DbInsertRecord(fldb, RecordNew("QF409", "SYD", "MEL", 2, 8, 00, 90));

@@ -115,8 +115,8 @@ List     DbFindByFlightNumber(FlightDb db, char *flightNumber) {
                  int departureDay, int departureHour, int departureMinute,
                  int durationMinutes);
 	*/
-	RecordNew dummyLower = RecordNew(flightNumber, "", "", 0, 0, 0, 0);
-	RecordNew dummyUpper = RecordNew(flightNumber, "", "", 6, 23, 59, 9999);
+	Record dummyLower = RecordNew(flightNumber, "", "", 0, 0, 0, 0);
+	Record dummyUpper = RecordNew(flightNumber, "", "", 6, 23, 59, 9999);
 	l = TreeSearchBetween(db->byFlightNumber, dummyLower, dummyUpper);
 	RecordFree(dummyLower);
 	RecordFree(dummyUpper);
