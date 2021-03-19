@@ -10,6 +10,7 @@
 struct flightDb {
 	Tree byFlightNumber;
 	Tree byDepartureAirportAndDay;
+	Tree byTimeRange;
 
 };
 
@@ -81,9 +82,24 @@ int compareByDepartureAirportAndDay(Record r1, Record r2) {
 //  * Searches  for  all  records  between  (day1, hour1, min1)  and (day2,
 //  * hour2, min2), and returns them all in a list in increasing  order  of
 //  * (day, hour, min, flight number).
-// int compareByTimeRange(Record r1, Record r2) {
-	
-// }
+int compareByTimeRange(Record r1, Record r2) {
+	if (CMPDAY == 0) {
+		if (CMPHOUR == 0) {
+			if (CMPMIN == 0) {
+				return CMPFLIGHTNUM;
+			}
+			else {
+				return CMPMIN;
+			}
+		}
+		else {
+			return CMPHOUR;
+		}
+	}
+	else {
+		return CMPDAY;
+	}
+}
 
 
 /**
@@ -99,6 +115,7 @@ FlightDb DbNew(void) {
 
 	db->byFlightNumber = TreeNew(compareByFlightNumber);
 	db->byDepartureAirportAndDay = TreeNew(compareByDepartureAirportAndDay);
+	db->byTimeRange = TreeNew(compareByTimeRange);
 	return db;
 }
 
@@ -108,6 +125,7 @@ FlightDb DbNew(void) {
 void     DbFree(FlightDb db) {
 	TreeFree(db->byFlightNumber, true);
 	TreeFree(db->byDepartureAirportAndDay, false);
+	TreeFree(db->byTimeRange, false);
 	free(db);
 }
 
@@ -126,6 +144,7 @@ void     DbFree(FlightDb db) {
 bool     DbInsertRecord(FlightDb db, Record r) {
 	if (TreeInsert(db->byFlightNumber, r) == true) {
 		TreeInsert(db->byDepartureAirportAndDay, r);
+		TreeInsert(db->byTimeRange, r);
 		return true;
 	}
 	else {
@@ -196,8 +215,13 @@ List     DbFindByDepartureAirportDay(FlightDb db, char *departureAirport,
 List     DbFindBetweenTimes(FlightDb db, 
                             int day1, int hour1, int min1, 
                             int day2, int hour2, int min2) {
-	// TODO: Complete this function
-	return ListNew();
+	Record dummyLower = RecordNew("", "", "", day1, hour1, min1, 0);
+	Record dummyUpper = RecordNew("zzzzzzzz", "zzzzzzz", "zzzzzzz", 
+	day2, hour2, min2, 9999);
+	List l = TreeSearchBetween(db->byTimeRange, dummyLower, dummyUpper);
+	RecordFree(dummyLower);
+	RecordFree(dummyUpper);
+	return l;
 }
 
 /**
