@@ -8,56 +8,83 @@
 #include "AVLTree.h"
 
 struct flightDb {
-	Tree byFlightNumberOnly;
 	Tree byFlightNumber;
+	Tree byDepartureAirportAndDay;
 
 };
+
+#define CMPFLIGHTNUM strcmp(RecordGetFlightNumber(r1), RecordGetFlightNumber(r2))
+#define CMPDEPAIRPORT strcmp(RecordGetDepartureAirport(r1), RecordGetDepartureAirport(r2))
+#define CMPDAY RecordGetDepartureDay(r1) - RecordGetDepartureDay(r2)
+#define CMPHOUR RecordGetDepartureHour(r1) - RecordGetDepartureHour(r2)
+#define CMPMIN RecordGetDepartureMinute(r1) - RecordGetDepartureMinute(r2)
+
 
 ////////////////////////////////////////////////////////////////////////
 // Comparison functions
 
-int compareByFlightNumberOnly(Record r1, Record r2) {
-	return strcmp(RecordGetFlightNumber(r1), RecordGetFlightNumber(r2));
-}
-
 // flight number, departure airport, day, hour and minute.
 int compareByFlightNumber(Record r1, Record r2) {
-	int cmpFlightNum = 
-	strcmp(RecordGetFlightNumber(r1), RecordGetFlightNumber(r2));
-	int cmpDepAirport = 
-	strcmp(RecordGetDepartureAirport(r1), RecordGetDepartureAirport(r2));
-	int cmpDay = RecordGetDepartureDay(r1) - RecordGetDepartureDay(r2);
-	int cmpHour = RecordGetDepartureHour(r1) - RecordGetDepartureHour(r2);
-	int cmpMin = RecordGetDepartureMinute(r1) - RecordGetDepartureMinute(r2);
-
-
-	if (cmpFlightNum == 0) {
+	if (CMPFLIGHTNUM == 0) {
 		// Departure airport
-		if (cmpDepAirport == 0) {
+		if (CMPDEPAIRPORT == 0) {
 			// day
-			if (cmpDay == 0) {
+			if (CMPDAY == 0) {
 				// Hour
-				if (cmpHour == 0) {
+				if (CMPHOUR == 0) {
 					// Minite
-					return cmpMin;
+					return CMPMIN;
 				}
 				else {
-					return cmpHour;
+					return CMPHOUR;
 				}
 			}
 			else {
-				return cmpDay;
+				return CMPDAY;
 			}
 		}
 		else {
-			return cmpDepAirport;
+			return CMPDEPAIRPORT;
 		}
 	}
 	else {
-		return cmpFlightNum;
+		return CMPFLIGHTNUM;
 	}
-	
 }
+// Searches  for all records with the given departure airport and day of
+// week (0 to 6), and returns them all in a list in increasing order  of
+// (hour, min, flight number).
+int compareByDepartureAirportAndDay(Record r1, Record r2) {
+	if (CMPDEPAIRPORT == 0) {
+		if (CMPDAY == 0) {
+			if (CMPHOUR == 0) {
+				if (CMPMIN == 0) {
+					return CMPFLIGHTNUM;
+				}	
+				else {
+					return CMPMIN;
+				}
+			}
+			else {
+				return CMPHOUR;
+			}
+		}
+		else {
+			return CMPDAY;
+		}
+	}
+	else {
+		return CMPDEPAIRPORT;
+	}
+}
+
+//  * Searches  for  all  records  between  (day1, hour1, min1)  and (day2,
+//  * hour2, min2), and returns them all in a list in increasing  order  of
+//  * (day, hour, min, flight number).
+// int compareByTimeRange(Record r1, Record r2) {
+	
+// }
+
 
 /**
  * Creates a new flight DB. 
@@ -71,7 +98,7 @@ FlightDb DbNew(void) {
 	}
 
 	db->byFlightNumber = TreeNew(compareByFlightNumber);
-	db->byFlightNumberOnly = TreeNew(compareByFlightNumberOnly);
+	db->byDepartureAirportAndDay = TreeNew(compareByDepartureAirportAndDay);
 	return db;
 }
 
@@ -80,7 +107,7 @@ FlightDb DbNew(void) {
  */
 void     DbFree(FlightDb db) {
 	TreeFree(db->byFlightNumber, true);
-	TreeFree(db->byFlightNumberOnly, true);
+	TreeFree(db->byDepartureAirportAndDay, false);
 	free(db);
 }
 
@@ -98,7 +125,7 @@ void     DbFree(FlightDb db) {
  */
 bool     DbInsertRecord(FlightDb db, Record r) {
 	if (TreeInsert(db->byFlightNumber, r) == true) {
-		//TreeInsert(db->byFlightNumberOnly, r);
+		TreeInsert(db->byDepartureAirportAndDay, r);
 		return true;
 	}
 	else {
@@ -144,8 +171,14 @@ List     DbFindByFlightNumber(FlightDb db, char *flightNumber) {
  */
 List     DbFindByDepartureAirportDay(FlightDb db, char *departureAirport,
                                      int day) {
-	// TODO: Complete this function
-	return ListNew();
+	Record dummyLower = RecordNew("", departureAirport, "", day, 0, 0, 0);
+	Record dummyUpper = RecordNew("zzzzzzzz", departureAirport, 
+	"zzzzzzz", day, 23, 59, 9999);
+	List l = TreeSearchBetween(db->byDepartureAirportAndDay, 
+	dummyLower, dummyUpper);
+	RecordFree(dummyLower);
+	RecordFree(dummyUpper);
+	return l;
 }
 
 

@@ -207,7 +207,6 @@ static void doTreeSearchBetween(Tree t, Node n, Record lower,
     // Go to left if current is larger than upper
     else if (upperCmp > 0) {
         doTreeSearchBetween(t, n->left, lower, upper, l);
-        
     }
     else {
         doTreeSearchBetween(t, n->left, lower, upper, l);
