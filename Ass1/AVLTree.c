@@ -122,34 +122,30 @@ static Record doTreeSearch(Tree t, Node n, Record rec) {
  * the tree (according to the comparison function).
  */
 bool TreeInsert(Tree t, Record rec) {
-    // printf("Inserted:\n");
-    // RecordShow(rec);
-    // printf("\n");
     bool result = false;
     t->root = doTreeInsert(t, t->root, rec, &result);
-    // RecordShow(n->rec);
-    // printf("\n%d\n", result);
-    printMatrix(t, t->root);
-    printf("End\n");
+    //printMatrix(t, t->root);
+    //printf("End\n");
     return result;
 }
-
+/*
 void printMatrix(Tree t, Node n) {
     if (n == NULL) {
         return;
     }
-
     printMatrix(t, n->left);
     RecordShow(n->rec);
     printf("\n");
     printMatrix(t, n->right);
 
 }
+*/
 Node doTreeInsert(Tree t, Node n, Record rec, bool *result) {
     // Ending condition when successful found the desired location.
     if (n == NULL) {
-        return newNode(rec);
         *result = true;
+        return newNode(rec);
+        
     }
     // If repeated number has been found in the tree.
     else if (t->compare(n->rec, rec) == 0) {
@@ -170,16 +166,16 @@ Node doTreeInsert(Tree t, Node n, Record rec, bool *result) {
         
         if (LHeight - RHeight > 1) {
             if (t->compare(n->left->rec, rec) < 0) {
-                return rotateLeft(n->left);
+                return rotateLeft(n);
                 
             }
             else {
-                return rotateRight(n->right);
+                return rotateRight(n);
             }
         }
         else if (RHeight - LHeight > 1) {
             if (t->compare(n->right->rec, rec) > 0) {
-                return rotateRight(n->right);
+                return rotateRight(n);
             }
             else {
                 return rotateLeft(n);
