@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/../Ass1/testAss1",
-            "args": [3],
+            "args": [6],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

@@ -11,6 +11,7 @@ struct flightDb {
 	Tree byFlightNumber;
 	Tree byDepartureAirportAndDay;
 	Tree byTimeRange;
+	Tree byNext;
 
 };
 
@@ -101,6 +102,24 @@ int compareByTimeRange(Record r1, Record r2) {
 	}
 }
 
+int compareByNext(Record r1, Record r2) {
+	if (CMPDEPAIRPORT == 0) {
+		if (CMPDAY == 0) {
+			if (CMPHOUR == 0) {
+				return CMPMIN;
+			}
+			else {
+				return CMPHOUR;
+			}
+		}
+		else {
+			return CMPDAY;
+		}
+	}
+	else {
+		return CMPDEPAIRPORT;
+	}
+}
 
 /**
  * Creates a new flight DB. 
@@ -116,6 +135,7 @@ FlightDb DbNew(void) {
 	db->byFlightNumber = TreeNew(compareByFlightNumber);
 	db->byDepartureAirportAndDay = TreeNew(compareByDepartureAirportAndDay);
 	db->byTimeRange = TreeNew(compareByTimeRange);
+	db->byNext = TreeNew(compareByNext);
 	return db;
 }
 
@@ -126,6 +146,7 @@ void     DbFree(FlightDb db) {
 	TreeFree(db->byFlightNumber, true);
 	TreeFree(db->byDepartureAirportAndDay, false);
 	TreeFree(db->byTimeRange, false);
+	TreeFree(db->byNext, false);
 	free(db);
 }
 
@@ -145,6 +166,7 @@ bool     DbInsertRecord(FlightDb db, Record r) {
 	if (TreeInsert(db->byFlightNumber, r) == true) {
 		TreeInsert(db->byDepartureAirportAndDay, r);
 		TreeInsert(db->byTimeRange, r);
+		TreeInsert(db->byNext, r);
 		return true;
 	}
 	else {
@@ -233,7 +255,9 @@ List     DbFindBetweenTimes(FlightDb db,
  */
 Record   DbFindNextFlight(FlightDb db, char *departureAirport, 
                           int day, int hour, int min) {
-	// TODO: Complete this function
-	return NULL;
+	Record dummy = RecordNew("", departureAirport, "", day, hour, min, 0);
+	Record n = TreeNext(db->byNext, dummy);
+	RecordFree(dummy);
+	return n;
 }
 

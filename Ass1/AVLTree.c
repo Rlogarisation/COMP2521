@@ -28,11 +28,10 @@ static Node newNode(Record rec);
 static Record doTreeSearch(Tree t, Node n, Record rec);
 Node doTreeInsert(Tree t, Node n, Record rec, bool *result);
 void doTreeSearchBetween(Tree t, Node n, Record lower, Record upper, List l);
-Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf);
+Record doTreeNextSearch(Tree t, Node n, Record r, Record *desiredRecord);
 int TreeHeight(Node n);
 Node rotateLeft(Node n);
 Node rotateRight(Node n);
-void printMatrix(Tree t, Node n);
 ////////////////////////////////////////////////////////////////////////
 
 static Node newNode(Record rec) {
@@ -271,32 +270,29 @@ void doTreeSearchBetween(Tree t, Node n,
  * Time complexity of the function must be O(log n).
  */
 Record TreeNext(Tree t, Record r) {
-    int reachedLeaf = false;
-    return doTreeNextSearch(t, t->root, r, reachedLeaf);
+    Record desiredRecord = NULL;
+    return doTreeNextSearch(t, t->root, r, &desiredRecord);
 }
 
-Record doTreeNextSearch(Tree t, Node n, Record r, int reachedLeaf) {
+Record doTreeNextSearch(Tree t, Node n, Record r, Record *desiredRecord) {
     // There is no exact match in the tree whatsoever.
     if (n == NULL) {
-        reachedLeaf = true;
-        return 0;
+        return *desiredRecord;
     }
 
     int cmp = t->compare(r, n->rec);
 
     if (cmp < 0) {
-        doTreeNextSearch(t, n->left, r, reachedLeaf);
+        *desiredRecord = n->rec;
+        return doTreeNextSearch(t, n->left, r, desiredRecord);
     }
     else if (cmp > 0) {
-        doTreeNextSearch(t, n->right, r, reachedLeaf);
+        return doTreeNextSearch(t, n->right, r, desiredRecord);
     }
     else {
         return n->rec;
     }
 
-    // Locate the smallest record.
-    if (reachedLeaf == true && cmp < 0) {
-        return n->rec;
-    }
-    return 0;
+    
+
 }
