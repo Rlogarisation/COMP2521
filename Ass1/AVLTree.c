@@ -269,15 +269,19 @@ Record doTreeNextSearch(Tree t, Node n, Record r, Record *desiredRecord) {
     if (n == NULL && *desiredRecord != NULL) {
         return *desiredRecord;
     }
-    // This is designed for the special case  
+    // This is designed for the situation of no flights 
+    // in the rest of the week,
+    // Then the function will search for the upcoming weeks.
+    // For example,  
     // when searching the flight on late Sunday evening,
     // if there is no any flight availble in later Sunday,
     // then this function will start searching from Monday 0am.
-    else if (n == NULL && *desiredRecord == NULL && 
-    RecordGetDepartureDay(r) == 6) {
+    else if (n == NULL && *desiredRecord == NULL) {
+        
         Record new = RecordNew(RecordGetFlightNumber(r), 
         RecordGetDepartureAirport(r), RecordGetArrivalAirport(r), 0, 0, 0, 0);
-        return TreeNext(t, new);
+
+        return doTreeNextSearch(t, t->root, new, desiredRecord);
     }
 
     int cmp = t->compare(r, n->rec);
