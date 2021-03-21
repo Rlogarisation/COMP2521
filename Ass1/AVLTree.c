@@ -276,8 +276,13 @@ Record TreeNext(Tree t, Record r) {
 
 Record doTreeNextSearch(Tree t, Node n, Record r, Record *desiredRecord) {
     // There is no exact match in the tree whatsoever.
-    if (n == NULL) {
+    if (n == NULL && *desiredRecord != NULL) {
         return *desiredRecord;
+    }
+    else if (n == NULL && *desiredRecord == NULL && RecordGetDepartureDay(r) == 6) {
+        Record new = RecordNew(RecordGetFlightNumber(r), 
+        RecordGetDepartureAirport(r), RecordGetArrivalAirport(r), 0, 0, 0, 0);
+        return TreeNext(t, new);
     }
 
     int cmp = t->compare(r, n->rec);
