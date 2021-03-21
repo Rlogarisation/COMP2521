@@ -1,3 +1,7 @@
+// Assignment 1 21T1 COMP2521: ADTs: FlightDb Using a Generic AVL Tree
+//
+// This program was written by Zheng Luo (z5206267@ad.unsw.edu.au)
+// on March/2021
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -113,8 +117,6 @@ static Record doTreeSearch(Tree t, Node n, Record rec) {
 ////////////////////////////////////////////////////////////////////////
 /**
  * Inserts the given record into the AVL tree.
- * You  must use the proper AVL insertion algorithm, as discussed in the
- * lectures.
  * The time complexity of this function must be O(log n).
  * Returns true if the record was inserted  successfully,  or  false  if
  * there was already a record that compares equal to the given record in
@@ -123,28 +125,14 @@ static Record doTreeSearch(Tree t, Node n, Record rec) {
 bool TreeInsert(Tree t, Record rec) {
     bool result = false;
     t->root = doTreeInsert(t, t->root, rec, &result);
-    //printMatrix(t, t->root);
-    //printf("End\n");
     return result;
 }
-/*
-void printMatrix(Tree t, Node n) {
-    if (n == NULL) {
-        return;
-    }
-    printMatrix(t, n->left);
-    RecordShow(n->rec);
-    printf("\n");
-    printMatrix(t, n->right);
 
-}
-*/
 Node doTreeInsert(Tree t, Node n, Record rec, bool *result) {
     // Ending condition when successful found the desired location.
     if (n == NULL) {
         *result = true;
         return newNode(rec);
-        
     }
     // If repeated number has been found in the tree.
     else if (t->compare(n->rec, rec) == 0) {
@@ -166,7 +154,6 @@ Node doTreeInsert(Tree t, Node n, Record rec, bool *result) {
         if (LHeight - RHeight > 1) {
             if (t->compare(n->left->rec, rec) < 0) {
                 return rotateLeft(n);
-                
             }
             else {
                 return rotateRight(n);
@@ -182,9 +169,10 @@ Node doTreeInsert(Tree t, Node n, Record rec, bool *result) {
         }
     }
     return n;
-
 }
 
+// This function computes the tree height, 
+// return the height of the tree as integer.
 int TreeHeight(Node n) {
     if (n == NULL) {
         return -1;
@@ -195,6 +183,8 @@ int TreeHeight(Node n) {
     return 1 + ((lh > rh) ? lh : rh);
 }
 
+// This function rotates the tree towards left,
+// return the node after rotation.
 Node rotateLeft(Node n) {
     if (n == NULL || n->right == NULL) {
         return n;
@@ -204,7 +194,8 @@ Node rotateLeft(Node n) {
     n1->left = n;
     return n1;
 }
-
+// This function rotates the tree towards right,
+// return the node after rotation.
 Node rotateRight(Node n) {
     if (n == NULL || n->left == NULL) {
         return n;
@@ -252,7 +243,6 @@ void doTreeSearchBetween(Tree t, Node n,
     // Go to left if current is larger than upper
     else if (upperCmp > 0) {
         doTreeSearchBetween(t, n->left, lower, upper, l);
-        
     }
     else {
         doTreeSearchBetween(t, n->left, lower, upper, l);
@@ -279,7 +269,12 @@ Record doTreeNextSearch(Tree t, Node n, Record r, Record *desiredRecord) {
     if (n == NULL && *desiredRecord != NULL) {
         return *desiredRecord;
     }
-    else if (n == NULL && *desiredRecord == NULL && RecordGetDepartureDay(r) == 6) {
+    // This is designed for the special case  
+    // when searching the flight on late Sunday evening,
+    // if there is no any flight availble in later Sunday,
+    // then this function will start searching from Monday 0am.
+    else if (n == NULL && *desiredRecord == NULL && 
+    RecordGetDepartureDay(r) == 6) {
         Record new = RecordNew(RecordGetFlightNumber(r), 
         RecordGetDepartureAirport(r), RecordGetArrivalAirport(r), 0, 0, 0, 0);
         return TreeNext(t, new);
@@ -287,6 +282,9 @@ Record doTreeNextSearch(Tree t, Node n, Record r, Record *desiredRecord) {
 
     int cmp = t->compare(r, n->rec);
 
+    // The next possible available flight will be recorded as desiredRecord,
+    // which will updated as the tree searching progress,
+    // desired record will be returned after searching reached the leaf. 
     if (cmp < 0) {
         *desiredRecord = n->rec;
         return doTreeNextSearch(t, n->left, r, desiredRecord);
@@ -297,7 +295,4 @@ Record doTreeNextSearch(Tree t, Node n, Record r, Record *desiredRecord) {
     else {
         return n->rec;
     }
-
-    
-
 }
