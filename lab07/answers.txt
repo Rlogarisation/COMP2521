@@ -1,0 +1,28 @@
+
+NOTE:
+- Your time complexities should be expressed in big-O notation and be in
+  terms of n, where n is the number of cells in the maze.
+
+============
+  solveBfs
+============
+
+- Worst case time complexity: O(n)
+
+- Explanation: 
+Searching path takes O(n) for worst case, 
+and recording takes O(m) where m is the shortest distance
+from source to destination.
+
+
+============
+  solveDfs
+============
+
+- Worst case time complexity: O(n)
+
+- Explanation: 
+Same as in breath first search, but using stack instead of queue,
+which takes same time complexity, so the time complexity is 
+still the same.
+
