@@ -83,22 +83,27 @@ void GraphRemoveEdge(Graph g, Vertex v, Vertex w)
  */
 int findPath(Graph g, Vertex src, Vertex dest, int max, int *path)
 {
+	// Initiate 30 visited path to -1, 
+	// storing last connected place (from where).
 	int visited[30] = {[0 ... 29] = -1};
 	visited[src] = src;
+
 	bool found = false;
 	assert(g != NULL);
+
 	Queue q = QueueNew();
 	QueueEnqueue(q, src);
-
+	// Searching for neighbours.
 	while (found == false && QueueIsEmpty(q) == false) {
 		Vertex v = QueueDequeue(q);
 		if (v == dest) {
 			found = true;
 		}
 		else {
-			// Searching for next available neighbours,
-			// put it into tmpNeighbour if found.
 			for (int i = 0; i < g->nV; i++) {
+				// Enqueue this location, 
+				// if which is connectable, hasn't been visited,
+				// and reachable within our fuel range.
 				if (g->edges[v][i] != 0 && g->edges[v][i] < max 
 				&& visited[i] == -1) {
 					visited[i] = v;
@@ -107,31 +112,26 @@ int findPath(Graph g, Vertex src, Vertex dest, int max, int *path)
 			}
 		}
 	}
+	// Initiate an array of size 30, 
+	// used to store best path in reversed way,
+	// then converted to normal order, and put into path.
 	int *tmpArray = malloc(30 * sizeof(int));
 	if (found == true) {
 		int tmp = dest;
 		int counterForVisited = 0;
-		// Put the path back into a tmp array in reverse way
+		// Trace back the best path.
 		while (tmp != src) {
 			tmpArray[counterForVisited] = visited[tmp];
 			counterForVisited++;
 			tmp = visited[tmp];
 		}
-		// Adding src
-		// tmpArray[counterForVisited] = visited[tmp];
-		// printf("this is path: %d\n", tmpArray[counterForVisited]);
-		// convert into normal way and put it into path
-		int sizeOfPath = 0;
-		while (tmpArray[sizeOfPath] >= 0 && tmpArray[sizeOfPath] < 30) {
-			sizeOfPath++;
-		}
 		int counter = 0;
-		for (int i = sizeOfPath - 1; i >= 0; i--) {
+		for (int i = counterForVisited - 1; i >= 0; i--) {
 			path[counter] = tmpArray[i];
 			counter++;
 		}
 		path[counter] = dest;
-		return sizeOfPath + 1;
+		return counterForVisited + 1;
 	}
 
 	return 0;
