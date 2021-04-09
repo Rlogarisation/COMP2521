@@ -89,10 +89,6 @@ int findPath(Graph g, Vertex src, Vertex dest, int max, int *path)
 	assert(g != NULL);
 	Queue q = QueueNew();
 	QueueEnqueue(q, src);
-	// Store src into path array
-	// path[0] = src;
-	// Initiate an array to store neighbours
-	int *tmpNeighbour = malloc(1000 * sizeof(int));
 
 	while (found == false && QueueIsEmpty(q) == false) {
 		Vertex v = QueueDequeue(q);
@@ -100,36 +96,13 @@ int findPath(Graph g, Vertex src, Vertex dest, int max, int *path)
 			found = true;
 		}
 		else {
-			int counterForNeighbour = 0;
 			// Searching for next available neighbours,
 			// put it into tmpNeighbour if found.
 			for (int i = 0; i < g->nV; i++) {
-				if (g->edges[v][i] != 0) {
-					tmpNeighbour[counterForNeighbour] = g->edges[v][i];
-					counterForNeighbour++;
-				}
-			}
-			int SizeOfNeighbour = counterForNeighbour;
-			int counterForMin;
-			bool enqueueFinished = false;
-			// Then we enqueue the neighbour in ascending order.
-			while (enqueueFinished != true) {
-				Vertex min = max;
-				for (int counterForEnqueue = 0; 
-				counterForEnqueue < SizeOfNeighbour; 
-				counterForEnqueue++) {
-					if (min > tmpNeighbour[counterForEnqueue]) {
-						min = tmpNeighbour[counterForEnqueue];
-						counterForMin = counterForEnqueue;
-					}
-				}
-				if (min != max && visited[counterForMin] == -1) {
-					QueueEnqueue(q, counterForMin);
-					visited[counterForMin] = v;
-					tmpNeighbour[counterForMin] = max;
-				}
-				else {
-					enqueueFinished = true;
+				if (g->edges[v][i] != 0 && g->edges[v][i] < max 
+				&& visited[i] == -1) {
+					visited[i] = v;
+					QueueEnqueue(q, i);
 				}
 			}
 		}
@@ -141,20 +114,23 @@ int findPath(Graph g, Vertex src, Vertex dest, int max, int *path)
 		// Put the path back into a tmp array in reverse way
 		while (tmp != src) {
 			tmpArray[counterForVisited] = visited[tmp];
-			printf("last connected to: %d\n", tmpArray[counterForVisited]);
 			counterForVisited++;
 			tmp = visited[tmp];
 		}
 		// Adding src
-		tmpArray[counterForVisited] = visited[tmp];
+		// tmpArray[counterForVisited] = visited[tmp];
+		// printf("this is path: %d\n", tmpArray[counterForVisited]);
 		// convert into normal way and put it into path
-		int sizeOfPath = sizeof *tmpArray / sizeof(int);
+		int sizeOfPath = 0;
+		while (tmpArray[sizeOfPath] >= 0 && tmpArray[sizeOfPath] < 30) {
+			sizeOfPath++;
+		}
 		int counter = 0;
-		for (int i = sizeOfPath; i >= 0; i--) {
+		for (int i = sizeOfPath - 1; i >= 0; i--) {
 			path[counter] = tmpArray[i];
-			printf("%d\n", path[counter]);
 			counter++;
 		}
+		path[counter] = dest;
 		return sizeOfPath + 1;
 	}
 
