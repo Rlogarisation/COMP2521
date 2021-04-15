@@ -28,15 +28,25 @@ ShortestPaths FloydWarshall(Graph g) {
 	// Set the distance between all as infinity for now.
 	// sps.dist = malloc(sizeof sps.numNodes * sizeof sps.numNodes);
 	sps.dist[sps.numNodes][sps.numNodes] = {INFINITY};
-	// First, fill in the value of disk[v][v] itself = 0.
+	// Implement sps.next:
+	// An 2d array which shows next vertex from given vertex to des.
+	// Set the whole array fill with -1 for now.
+	// sps.next = malloc(sizeof sps.numNodes * sizeof sps.numNodes);
+	sps.next[sps.numNodes][sps.numNodes] = {-1};
+
+	// First, fill in the value of dist[v][v] itself = 0.
+	// In next, Assume itself to itself is value itself for now.
 	for (v = 0; v < sps.numNodes; v++) {
 		sps.dist[v][v] = 0;
+		sps.next[v][v] = v;
 	} 
 	// Second, fill in the neighbour distance.
 	for (v = 0; v < sps.numNodes; v++) {
 		AdjList ListOutIncident = GraphOutIncident(g, v);
 		while (ListOutIncident != NULL) {
 			sps.dist[v][ListOutIncident->v] = ListOutIncident->weight;
+			// Assume in next: node 1 to node 2 will have a next of node 2.
+			sps.next[v][ListOutIncident->v] = ListOutIncident->v;
 			ListOutIncident = ListOutIncident->next;
 		}
 	}
@@ -46,24 +56,11 @@ ShortestPaths FloydWarshall(Graph g) {
 			for (j = 1; j < sps.numNodes; j++) {
 				if (sps.dist[i][j] > sps.dist[i][k] + sps.dist[k][j]) {
 					sps.dist[i][j] = sps.dist[i][k] + sps.dist[k][j];
+					sps.next[i][j] = k;
 				}
 			}
 		}
 	}
-
-
-	// Implement sps.next:
-	// An 2d array which shows next vertex from given vertex to des.
-	// Set the whole array fill with -1 for now, 
-	// which means no next.
-	// sps.next = malloc(sizeof sps.numNodes * sizeof sps.numNodes);
-	sps.next[sps.numNodes][sps.numNodes] = {-1};
-	// What is the value from itself to itself?
-	
-
-
-
-
 
 	return sps;
 }
@@ -85,6 +82,6 @@ void showShortestPaths(ShortestPaths sps) {
  * We will call this function during testing, so you must implement it.
  */
 void freeShortestPaths(ShortestPaths sps) {
-	// TODO: Implement this function
+	free(sps);
 }
 
