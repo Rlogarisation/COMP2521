@@ -3,6 +3,7 @@
         "stdio.h": "c",
         "stdlib.h": "c",
         "queue.h": "c",
-        "avltree.h": "c"
+        "avltree.h": "c",
+        "floydwarshall.h": "c"
     }
 }

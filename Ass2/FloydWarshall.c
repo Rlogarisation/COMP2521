@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "FloydWarshall.h"
 #include "Graph.h"
@@ -19,29 +20,35 @@
  */
 ShortestPaths FloydWarshall(Graph g) {
 	// Implement the framework for ShortestPaths.
-	ShortestPaths sps = malloc(sizeof(ShortestPaths));
+	// I AM NOT SURE THE APPROPRIATE SIZE FOR THIS.
+	ShortestPaths sps;
 	sps.numNodes = GraphNumVertices(g);
 
 
 	// Implement sps.dist:
 	// An 2d array which shows shortest distance between any two vertices.
 	// Set the distance between all as infinity for now.
-	// sps.dist = malloc(sizeof sps.numNodes * sizeof sps.numNodes);
-	sps.dist[sps.numNodes][sps.numNodes] = {INFINITY};
+	sps.dist = malloc(sps.numNodes * sizeof(int *));
 	// Implement sps.next:
 	// An 2d array which shows next vertex from given vertex to des.
 	// Set the whole array fill with -1 for now.
-	// sps.next = malloc(sizeof sps.numNodes * sizeof sps.numNodes);
-	sps.next[sps.numNodes][sps.numNodes] = {-1};
+	sps.next = malloc(sps.numNodes * sizeof(int));
+	
+	for (int v = 0; v < sps.numNodes; v++) {
+		sps.dist[v] = malloc(sps.numNodes * sizeof(int));
+		memset(sps.dist[v], INFINITY, sps.numNodes * sizeof(int));
+		sps.next[v] = malloc(sps.numNodes * sizeof(int));
+		memset(sps.next[v], -1, sps.numNodes * sizeof(int));
+	}
 
 	// First, fill in the value of dist[v][v] itself = 0.
 	// In next, Assume itself to itself is value itself for now.
-	for (v = 0; v < sps.numNodes; v++) {
+	for (int v = 0; v < sps.numNodes; v++) {
 		sps.dist[v][v] = 0;
 		sps.next[v][v] = v;
 	} 
 	// Second, fill in the neighbour distance.
-	for (v = 0; v < sps.numNodes; v++) {
+	for (int v = 0; v < sps.numNodes; v++) {
 		AdjList ListOutIncident = GraphOutIncident(g, v);
 		while (ListOutIncident != NULL) {
 			sps.dist[v][ListOutIncident->v] = ListOutIncident->weight;
@@ -51,9 +58,9 @@ ShortestPaths FloydWarshall(Graph g) {
 		}
 	}
 	// Last step, search the shortest path between inter-vertices.
-	for (k = 1; k < sps.numNodes; k++) {
-		for (i = 1; i < sps.numNodes; i++) {
-			for (j = 1; j < sps.numNodes; j++) {
+	for (int k = 1; k < sps.numNodes; k++) {
+		for (int i = 1; i < sps.numNodes; i++) {
+			for (int j = 1; j < sps.numNodes; j++) {
 				if (sps.dist[i][j] > sps.dist[i][k] + sps.dist[k][j]) {
 					sps.dist[i][j] = sps.dist[i][k] + sps.dist[k][j];
 					sps.next[i][j] = k;
@@ -82,6 +89,7 @@ void showShortestPaths(ShortestPaths sps) {
  * We will call this function during testing, so you must implement it.
  */
 void freeShortestPaths(ShortestPaths sps) {
-	free(sps);
+	// free(sps);
+
 }
 
