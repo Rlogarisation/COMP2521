@@ -81,6 +81,8 @@ void GraphRemoveEdge(Graph g, Vertex v, Vertex w)
  * `dest` and returns the number of vertices stored in the  path  array.
  * Returns 0 if there is no such path.
  */
+// g->nV
+
 int findPath(Graph g, Vertex src, Vertex dest, int max, int *path)
 {
 	// Initiate 30 visited path to -1, 
@@ -133,8 +135,12 @@ int findPath(Graph g, Vertex src, Vertex dest, int max, int *path)
 		path[counter] = dest;
 		return counterForVisited + 1;
 	}
+	
+
 
 	return 0;
+	// Remember free queue
+	// Free all 
 }
 
 ////////////////////////////////////////////////////////////////////////
