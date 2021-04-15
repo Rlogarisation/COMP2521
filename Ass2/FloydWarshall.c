@@ -20,7 +20,6 @@
  */
 ShortestPaths FloydWarshall(Graph g) {
 	// Implement the framework for ShortestPaths.
-	// I AM NOT SURE THE APPROPRIATE SIZE FOR THIS.
 	ShortestPaths sps;
 	sps.numNodes = GraphNumVertices(g);
 
@@ -33,14 +32,17 @@ ShortestPaths FloydWarshall(Graph g) {
 	// An 2d array which shows next vertex from given vertex to des.
 	// Set the whole array fill with -1 for now.
 	sps.next = malloc(sps.numNodes * sizeof(int *));
-	
 	for (int v = 0; v < sps.numNodes; v++) {
 		sps.dist[v] = malloc(sps.numNodes * sizeof(int));
-		memset(sps.dist[v], INFINITY, sps.numNodes * sizeof(int));
 		sps.next[v] = malloc(sps.numNodes * sizeof(int));
-		memset(sps.next[v], -1, sps.numNodes * sizeof(int));
 	}
 
+	for (int i = 0; i < sps.numNodes; i++) {
+		for (int j = 0; j < sps.numNodes; j++) {
+			sps.dist[i][j] = INFINITY;
+			sps.next[i][j] = -1;
+		}
+	}
 	// First, fill in the value of dist[v][v] itself = 0.
 	for (int v = 0; v < sps.numNodes; v++) {
 		sps.dist[v][v] = 0;
@@ -49,7 +51,6 @@ ShortestPaths FloydWarshall(Graph g) {
 	for (int v = 0; v < sps.numNodes; v++) {
 		AdjList ListOutIncident = GraphOutIncident(g, v);
 		while (ListOutIncident != NULL) {
-			assert(ListOutIncident->weight > 0);
 			sps.dist[v][ListOutIncident->v] = ListOutIncident->weight;
 			// Assume in next: node 1 to node 2 will have a next of node 2.
 			sps.next[v][ListOutIncident->v] = ListOutIncident->v;
@@ -61,8 +62,8 @@ ShortestPaths FloydWarshall(Graph g) {
 	for (int k = 0; k < sps.numNodes; k++) {
 		for (int i = 0; i < sps.numNodes; i++) {
 			for (int j = 0; j < sps.numNodes; j++) {
-				if (sps.dist[i][j] > sps.dist[i][k] + sps.dist[k][j] &&
-				0 < sps.dist[i][k] + sps.dist[k][j]) {
+				if (sps.dist[i][j] > sps.dist[i][k] + sps.dist[k][j]
+				&& sps.dist[i][k] + sps.dist[k][j] > 0) {
 					sps.dist[i][j] = sps.dist[i][k] + sps.dist[k][j];
 					sps.next[i][j] = k;
 				}
