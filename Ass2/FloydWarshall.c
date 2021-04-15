@@ -26,17 +26,16 @@ ShortestPaths FloydWarshall(Graph g) {
 
 	// Implement sps.dist:
 	// An 2d array which shows shortest distance between any two vertices.
-	// Set the distance between all as infinity for now.
 	sps.dist = malloc(sps.numNodes * sizeof(int *));
 	// Implement sps.next:
 	// An 2d array which shows next vertex from given vertex to des.
-	// Set the whole array fill with -1 for now.
 	sps.next = malloc(sps.numNodes * sizeof(int *));
 	for (int v = 0; v < sps.numNodes; v++) {
 		sps.dist[v] = malloc(sps.numNodes * sizeof(int));
 		sps.next[v] = malloc(sps.numNodes * sizeof(int));
 	}
-
+	// Set the distance between all as infinity for now.
+	// Set the whole array fill with -1 for now.
 	for (int i = 0; i < sps.numNodes; i++) {
 		for (int j = 0; j < sps.numNodes; j++) {
 			sps.dist[i][j] = INFINITY;
@@ -91,7 +90,13 @@ void showShortestPaths(ShortestPaths sps) {
  * We will call this function during testing, so you must implement it.
  */
 void freeShortestPaths(ShortestPaths sps) {
-	// free(sps);
-
+	// Free rows for both dist and next first.
+	for (int i = 0; i < sps.numNodes; i++) {
+		free(sps.dist[i]);
+		free(sps.next[i]);
+	}
+	// Free dist and next itself.
+	free(sps.dist);
+	free(sps.next);
 }
 
