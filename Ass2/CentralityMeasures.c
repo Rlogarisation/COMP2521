@@ -35,13 +35,13 @@ EdgeValues edgeBetweennessCentrality(Graph g) {
 
 	// Calculate the number of shortest paths through current edge
 	// Which means the number of appearance of current edge in sps.next
-
 	// Determine the edge betweenness in e.values,
 	// by looping thro the 2d array.
 	for (int i = 0; i < e.numNodes; i++) {
 		for (int j = 0; j < e.numNodes; j++) {
-			// We only consider if they are direct edge.
-			if (sps.next[i][j] == j) {
+			// Determine the path 
+			// if there are adjacent and a path exist.
+			if (GraphIsAdjacent(g, i, j) == true && sps.next[i][j] != -1) {
 				e.values[i][j] = numberOfEdgePasses(i, j, sps, e);
 			}
 		}
@@ -62,8 +62,7 @@ double numberOfEdgePasses(int edgeSrc, int edgeDes, ShortestPaths sps, EdgeValue
 			// Keep searching until there is no path.
 			while (sps.next[a][b] != -1) {
 				int k = sps.next[a][b];
-				if ((i == edgeSrc && j == edgeDes) 
-				|| (i == edgeSrc && k == edgeDes)) {
+				if ((a == edgeSrc && k == edgeDes)) {
 					counterEdgePasses++;
 					break;
 				}

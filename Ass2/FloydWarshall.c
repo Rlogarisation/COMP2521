@@ -81,7 +81,24 @@ ShortestPaths FloydWarshall(Graph g) {
  * may choose not to implement this function.
  */
 void showShortestPaths(ShortestPaths sps) {
-	
+	for (int i = 0; i < sps.numNodes; i++) {
+		for (int j = 0; j < sps.numNodes; j++) {
+			if (sps.dist[i][j] != INFINITY) {
+				printf("From %d to %d has the shortest distance of %d\n", 
+				i, j, sps.dist[i][j]);
+			}
+			
+		}
+	}
+	for (int i = 0; i < sps.numNodes; i++) {
+		for (int j = 0; j < sps.numNodes; j++) {
+			if (sps.next[i][j] != -1) {
+				printf("From %d to %d has the next vertex of %d\n", 
+				i, j, sps.next[i][j]);
+			}
+			
+		}
+	}
 }
 
 /**
