@@ -9,27 +9,16 @@
 #include "FloydWarshall.h"
 #include "Graph.h"
 
-
-double numberOfEdgePasses(int edgeSrc, int edgeDes, ShortestPaths sps, EdgeValues e);
+static EdgeValues initiateEdgeValueStruct(Graph g);
+static double numberOfEdgePasses(int edgeSrc, int edgeDes, ShortestPaths sps, EdgeValues e);
 /**
  * Finds  the  edge  betweenness  centrality  for each edge in the given
  * graph and returns the results in a  EdgeValues  structure.  The  edge
  * betweenness centrality of a non-existant edge should be set to -1.0.
  */
 EdgeValues edgeBetweennessCentrality(Graph g) {
-	// Allocate spaces for edgevalues e.
-	EdgeValues e;
-	e.numNodes = GraphNumVertices(g);
-	e.values = malloc(e.numNodes * sizeof(double *));
-	for (int i = 0; i < e.numNodes; i++) {
-		e.values[i] = malloc(e.numNodes * sizeof(double));
-	}
-	for (int i = 0; i < e.numNodes; i++) {
-		for (int j = 0; j < e.numNodes; j++) {
-			e.values[i][j] = -1.0;
-		}
-	}
-
+	// Implement the framework for EdgeValues.
+	EdgeValues e = initiateEdgeValueStruct(g);
 	// Find the shortest pair for all nodes.
 	ShortestPaths sps = FloydWarshall(g);
 
@@ -53,7 +42,23 @@ EdgeValues edgeBetweennessCentrality(Graph g) {
 	return e;
 }
 
-double numberOfEdgePasses(int edgeSrc, int edgeDes, ShortestPaths sps, EdgeValues e) {
+static EdgeValues initiateEdgeValueStruct(Graph g) {
+	// Allocate spaces for edgevalues e.
+	EdgeValues e;
+	e.numNodes = GraphNumVertices(g);
+	e.values = malloc(e.numNodes * sizeof(double *));
+	for (int i = 0; i < e.numNodes; i++) {
+		e.values[i] = malloc(e.numNodes * sizeof(double));
+	}
+	for (int i = 0; i < e.numNodes; i++) {
+		for (int j = 0; j < e.numNodes; j++) {
+			e.values[i][j] = -1.0;
+		}
+	}
+	return e;
+}
+
+static double numberOfEdgePasses(int edgeSrc, int edgeDes, ShortestPaths sps, EdgeValues e) {
 	double counterEdgePasses = 0.0;
 	for (int i = 0; i < e.numNodes; i++) {
 		for (int j = 0; j < e.numNodes; j++) {

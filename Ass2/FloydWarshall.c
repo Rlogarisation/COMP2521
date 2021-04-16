@@ -8,7 +8,9 @@
 #include "FloydWarshall.h"
 #include "Graph.h"
 
-int findNext(ShortestPaths sps, int src, int dest);
+
+static ShortestPaths initiateSpsStruct(Graph g);
+static int findNext(ShortestPaths sps, int src, int dest);
 /**
  * Finds all shortest paths between all pairs of nodes.
  * 
@@ -20,28 +22,8 @@ int findNext(ShortestPaths sps, int src, int dest);
  */
 ShortestPaths FloydWarshall(Graph g) {
 	// Implement the framework for ShortestPaths.
-	ShortestPaths sps;
-	sps.numNodes = GraphNumVertices(g);
+	ShortestPaths sps = initiateSpsStruct(g);
 
-
-	// Implement sps.dist:
-	// An 2d array which shows shortest distance between any two vertices.
-	sps.dist = malloc(sps.numNodes * sizeof(int *));
-	// Implement sps.next:
-	// An 2d array which shows next vertex from given vertex to des.
-	sps.next = malloc(sps.numNodes * sizeof(int *));
-	for (int v = 0; v < sps.numNodes; v++) {
-		sps.dist[v] = malloc(sps.numNodes * sizeof(int));
-		sps.next[v] = malloc(sps.numNodes * sizeof(int));
-	}
-	// Set the distance between all as infinity for now.
-	// Set the whole array fill with -1 for now.
-	for (int i = 0; i < sps.numNodes; i++) {
-		for (int j = 0; j < sps.numNodes; j++) {
-			sps.dist[i][j] = INFINITY;
-			sps.next[i][j] = -1;
-		}
-	}
 	// First, fill in the value of dist[v][v] itself = 0.
 	for (int v = 0; v < sps.numNodes; v++) {
 		sps.dist[v][v] = 0;
@@ -72,7 +54,32 @@ ShortestPaths FloydWarshall(Graph g) {
 	return sps;
 }
 
-int findNext(ShortestPaths sps, int src, int dest) {
+static ShortestPaths initiateSpsStruct(Graph g) {
+	ShortestPaths sps;
+	sps.numNodes = GraphNumVertices(g);
+
+	// Implement sps.dist:
+	// An 2d array which shows shortest distance between any two vertices.
+	sps.dist = malloc(sps.numNodes * sizeof(int *));
+	// Implement sps.next:
+	// An 2d array which shows next vertex from given vertex to des.
+	sps.next = malloc(sps.numNodes * sizeof(int *));
+	for (int v = 0; v < sps.numNodes; v++) {
+		sps.dist[v] = malloc(sps.numNodes * sizeof(int));
+		sps.next[v] = malloc(sps.numNodes * sizeof(int));
+	}
+	// Set the distance between all as infinity for now.
+	// Set the whole array fill with -1 for now.
+	for (int i = 0; i < sps.numNodes; i++) {
+		for (int j = 0; j < sps.numNodes; j++) {
+			sps.dist[i][j] = INFINITY;
+			sps.next[i][j] = -1;
+		}
+	}
+	return sps;
+}
+
+static int findNext(ShortestPaths sps, int src, int dest) {
 	if (sps.next[src][dest] == dest) {
 		return dest;
 	}
