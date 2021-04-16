@@ -10,7 +10,7 @@
 #include "Graph.h"
 
 static EdgeValues initiateEdgeValueStruct(Graph g);
-static double numberOfEdgePasses(int edgeSrc, int edgeDes, ShortestPaths sps, EdgeValues e);
+static double numberOfEdgePasses(int edgeSrc, int edgeDes, ShortestPaths sps, EdgeValues evs);
 /**
  * Finds  the  edge  betweenness  centrality  for each edge in the given
  * graph and returns the results in a  EdgeValues  structure.  The  edge
@@ -18,20 +18,20 @@ static double numberOfEdgePasses(int edgeSrc, int edgeDes, ShortestPaths sps, Ed
  */
 EdgeValues edgeBetweennessCentrality(Graph g) {
 	// Implement the framework for EdgeValues.
-	EdgeValues e = initiateEdgeValueStruct(g);
+	EdgeValues evs = initiateEdgeValueStruct(g);
 	// Find the shortest pair for all nodes.
 	ShortestPaths sps = FloydWarshall(g);
 
 	// Calculate the number of shortest paths through current edge
 	// Which means the number of appearance of current edge in sps.next
-	// Determine the edge betweenness in e.values,
+	// Determine the edge betweenness in evs.values,
 	// by looping thro the 2d array.
-	for (int i = 0; i < e.numNodes; i++) {
-		for (int j = 0; j < e.numNodes; j++) {
+	for (int i = 0; i < evs.numNodes; i++) {
+		for (int j = 0; j < evs.numNodes; j++) {
 			// Determine the path 
 			// if there are adjacent and a path exist.
 			if (GraphIsAdjacent(g, i, j) == true && sps.next[i][j] != -1) {
-				e.values[i][j] = numberOfEdgePasses(i, j, sps, e);
+				evs.values[i][j] = numberOfEdgePasses(i, j, sps, evs);
 			}
 		}
 	}
@@ -39,29 +39,29 @@ EdgeValues edgeBetweennessCentrality(Graph g) {
 	// Free all memories related to FloydWarshall.
 	freeShortestPaths(sps);
 
-	return e;
+	return evs;
 }
 
 static EdgeValues initiateEdgeValueStruct(Graph g) {
-	// Allocate spaces for edgevalues e.
-	EdgeValues e;
-	e.numNodes = GraphNumVertices(g);
-	e.values = malloc(e.numNodes * sizeof(double *));
-	for (int i = 0; i < e.numNodes; i++) {
-		e.values[i] = malloc(e.numNodes * sizeof(double));
+	// Allocate spaces for edgevalues evs.
+	EdgeValues evs;
+	evs.numNodes = GraphNumVertices(g);
+	evs.values = malloc(evs.numNodes * sizeof(double *));
+	for (int i = 0; i < evs.numNodes; i++) {
+		evs.values[i] = malloc(evs.numNodes * sizeof(double));
 	}
-	for (int i = 0; i < e.numNodes; i++) {
-		for (int j = 0; j < e.numNodes; j++) {
-			e.values[i][j] = -1.0;
+	for (int i = 0; i < evs.numNodes; i++) {
+		for (int j = 0; j < evs.numNodes; j++) {
+			evs.values[i][j] = -1.0;
 		}
 	}
-	return e;
+	return evs;
 }
 
-static double numberOfEdgePasses(int edgeSrc, int edgeDes, ShortestPaths sps, EdgeValues e) {
+static double numberOfEdgePasses(int edgeSrc, int edgeDes, ShortestPaths sps, EdgeValues evs) {
 	double counterEdgePasses = 0.0;
-	for (int i = 0; i < e.numNodes; i++) {
-		for (int j = 0; j < e.numNodes; j++) {
+	for (int i = 0; i < evs.numNodes; i++) {
+		for (int j = 0; j < evs.numNodes; j++) {
 			int a = i;
 			int b = j;
 			// Keep searching until there is no path.
