@@ -64,7 +64,6 @@ double numberOfEdgePasses(int edgeSrc, int edgeDes, ShortestPaths sps, EdgeValue
 				int k = sps.next[a][b];
 				if ((a == edgeSrc && k == edgeDes)) {
 					counterEdgePasses++;
-					break;
 				}
 				a = k;
 			}

@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/../Ass2/testFloydWarshall",
-            "args": ["graphs/1.in"],
+            "args": ["test.in"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}/../Ass2",
             "environment": [],

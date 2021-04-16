@@ -8,6 +8,7 @@
 #include "FloydWarshall.h"
 #include "Graph.h"
 
+int findNext(ShortestPaths sps, int src, int dest);
 /**
  * Finds all shortest paths between all pairs of nodes.
  * 
@@ -62,15 +63,22 @@ ShortestPaths FloydWarshall(Graph g) {
 			for (int j = 0; j < sps.numNodes; j++) {
 				if (sps.dist[i][j] > sps.dist[i][k] + sps.dist[k][j]
 				&& sps.dist[i][k] + sps.dist[k][j] > 0) {
-					sps.dist[i][j] = sps.dist[i][k] + sps.dist[k][j];
-					sps.next[i][j] = k;
+					sps.dist[i][j] = sps.dist[i][k] + sps.dist[k][j];	
+					sps.next[i][j] = findNext(sps, i, k);
 				}
 			}
 		}
 	}
-
 	return sps;
 }
+
+int findNext(ShortestPaths sps, int src, int dest) {
+	if (sps.next[src][dest] == dest) {
+		return dest;
+	}
+	return findNext(sps, src, sps.next[src][dest]);
+}
+
 
 /**
  * This  function  is  for  you to print out the ShortestPaths structure
