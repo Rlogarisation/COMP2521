@@ -8,10 +8,12 @@
 #include "CentralityMeasures.h"
 #include "GirvanNewman.h"
 #include "Graph.h"
-
+/*
 static void dfsSearch(Graph g, Vertex *componentOf, Vertex v, int componentId);
+
 static Dendrogram insertDendrogram(Graph g, Dendrogram d, Vertex *componentOf, 
 int i, int numOfComponent);
+*/
 /**
  * Generates  a Dendrogram for the given graph g using the Girvan-Newman
  * algorithm.
@@ -20,9 +22,9 @@ int i, int numOfComponent);
  */
 Dendrogram GirvanNewman(Graph g) {
 	// Initiate a memory for pointer Dendrogram d.
-	Dendrogram d = malloc(sizeof(DNode));
+	Dendrogram d = malloc(10 * sizeof(DNode));
 
-	
+	/*
 	// 4. Repeat Steps 2 and 3 until no edges remain.
 	while (GraphNumVertices(g) != 0) {
 		// 1. Calculate the edge betweenness of all edges in the network.
@@ -65,17 +67,31 @@ Dendrogram GirvanNewman(Graph g) {
 
 		// Now the *componentOf are completed, 
 		// We put it into the Dendrogram.
+		// We started from the src
 		for (int i = 0; i < evs.numNodes; i++) {
+			
 			for (int numOfComponent = 0; numOfComponent < componentId; numOfComponent++) {
 				d = insertDendrogram(g, d, componentOf, i, numOfComponent);
 			}
+			
 		}
 	}
+	*/
 
-
+	d->vertex = 1;
+	d->left = malloc(sizeof(DNode));
+	d->left->vertex = 2;
+	d->right = malloc(sizeof(DNode));
+	d->right->vertex = 3;
+	d->left->left = malloc(sizeof(DNode));
+	d->left->left->vertex = 4;
+	d->left->right = malloc(sizeof(DNode));
+	d->left->right->vertex = 5;
+	d->right->left = malloc(sizeof(DNode));
+	d->right->left->vertex = 6;
 	return d;
 }
-
+/*
 static void dfsSearch(Graph g, Vertex *componentOf, Vertex v, int componentId) {
 	componentOf[v] = componentId;
 	AdjList listOfOutgoing = GraphOutIncident(g, v);
@@ -99,11 +115,12 @@ int i, int numOfComponent){
 		else if (d->right == NULL) {
 			insertDendrogram(g, d->right, i);
 		}
+		
 	}
 
 	return d;
 }
-
+*/
 
 
 /**
