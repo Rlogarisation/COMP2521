@@ -21,7 +21,7 @@ run_test()
 	
 	r="$(diff "CentralityMeasuresTests/$i.out" "CentralityMeasuresTests/$i.exp")"
 	
-	if [[ "$r" == "" ]]
+	if [ "$r" = "" ]
 	then
 		echo -e "=========== ${GREEN}[$i] Output Matches${NC} ==========="
 	else

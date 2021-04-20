@@ -21,7 +21,7 @@ run_test()
 	
 	r="$(diff "FloydWarshallTests/$i.out" "FloydWarshallTests/$i.exp")"
 	
-	if [[ "$r" == "" ]]
+	if [ "$r" = "" ]
 	then
 		echo -e "=========== ${GREEN}[$i] Output Matches${NC} ==========="
 	else

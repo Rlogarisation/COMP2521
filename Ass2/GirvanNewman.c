@@ -73,17 +73,13 @@ Dendrogram GirvanNewman(Graph g) {
 		
 	}
 	*/
-	d->vertex = 0;
 	d->left = malloc(sizeof(DNode));
-	d->left->vertex = 0;
 	d->right = malloc(sizeof(DNode));
 	d->right->vertex = 1;
 	d->left->left = malloc(sizeof(DNode));
 	d->left->left->vertex = 0;
 	d->left->right = malloc(sizeof(DNode));
 	d->left->right->vertex = 2;
-	d->right->left = malloc(sizeof(DNode));
-	d->right->left->vertex = 1;
 
 	return d;
 }
