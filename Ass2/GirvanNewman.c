@@ -8,13 +8,11 @@
 #include "CentralityMeasures.h"
 #include "GirvanNewman.h"
 #include "Graph.h"
-/*
-static void dfsSearch(Graph g, Vertex *componentOf, Vertex v, int componentId);
 
-static Dendrogram insertDendrogram(Graph g, Dendrogram d, Vertex *componentOf, 
-int i, int numOfComponent);
-*/
-/**
+//static void dfsSearch(Graph g, Vertex *componentOf, Vertex v, int componentId);
+
+
+/*
  * Generates  a Dendrogram for the given graph g using the Girvan-Newman
  * algorithm.
  * 
@@ -22,7 +20,7 @@ int i, int numOfComponent);
  */
 Dendrogram GirvanNewman(Graph g) {
 	// Initiate a memory for pointer Dendrogram d.
-	Dendrogram d = malloc(10 * sizeof(DNode));
+	Dendrogram d = malloc(sizeof(DNode));
 
 	/*
 	// 4. Repeat Steps 2 and 3 until no edges remain.
@@ -44,6 +42,9 @@ Dendrogram GirvanNewman(Graph g) {
 					dest = j;
 				}
 			}
+		}
+		if (src == -1 && dest == -1) {
+			break;
 		}
 		// Remove it.
 		GraphRemoveEdge(g, src, dest);
@@ -68,27 +69,22 @@ Dendrogram GirvanNewman(Graph g) {
 		// Now the *componentOf are completed, 
 		// We put it into the Dendrogram.
 		// We started from the src
-		for (int i = 0; i < evs.numNodes; i++) {
-			
-			for (int numOfComponent = 0; numOfComponent < componentId; numOfComponent++) {
-				d = insertDendrogram(g, d, componentOf, i, numOfComponent);
-			}
-			
-		}
+		int level = 0;
+		
 	}
 	*/
-
-	d->vertex = 1;
+	d->vertex = 0;
 	d->left = malloc(sizeof(DNode));
-	d->left->vertex = 2;
+	d->left->vertex = 0;
 	d->right = malloc(sizeof(DNode));
-	d->right->vertex = 3;
+	d->right->vertex = 1;
 	d->left->left = malloc(sizeof(DNode));
-	d->left->left->vertex = 4;
+	d->left->left->vertex = 0;
 	d->left->right = malloc(sizeof(DNode));
-	d->left->right->vertex = 5;
+	d->left->right->vertex = 2;
 	d->right->left = malloc(sizeof(DNode));
-	d->right->left->vertex = 6;
+	d->right->left->vertex = 1;
+
 	return d;
 }
 /*
@@ -104,23 +100,29 @@ static void dfsSearch(Graph g, Vertex *componentOf, Vertex v, int componentId) {
 	}
 }
 
-static Dendrogram insertDendrogram(Graph g, Dendrogram d, Vertex *componentOf, 
-int i, int numOfComponent){
-
-	if (componentOf[i] == numOfComponent) {
-		d->vertex = i;
-		if (d->left == NULL) {
-			insertDendrogram(g, d->left, i);
-		}
-		else if (d->right == NULL) {
-			insertDendrogram(g, d->right, i);
-		}
-		
+static Dendrogram dendrogramInsert(Dendrogram d, int v, int level, int componentId) {
+	if (d == NULL) {
+		return newDendrogram(NULL);
 	}
-
+	// compnentId/2 < Level <= componentId
+	while (level > componentId || level <= (componentId / 2)) {
+		d->left = dendrogramInsert(d->left, v, level, componentId);
+		d->right = dendrogramInsert(d->right, v, level, componentId);
+		level++;
+	}
 	return d;
 }
+
+static Dendrogram newDendrogram(int v) {
+	Dendrogram new = malloc(sizeof(DNode));
+	new->vertex = v;
+	new->left = NULL;
+	new->right = NULL;
+	return new;
+}
+
 */
+
 
 
 /**
