@@ -8,9 +8,9 @@
 #include "CentralityMeasures.h"
 #include "GirvanNewman.h"
 #include "Graph.h"
-
-//static void dfsSearch(Graph g, Vertex *componentOf, Vertex v, int componentId);
-
+static void bfsSearch(Graph g, Vertex *componentOf, Vertex v, int componentId);
+static Dendrogram treeSearchAndInsert(Dendrogram d, Vertex searchValue, Vertex src, Vertex dest);
+static Dendrogram newDendrogram(int v);
 
 /*
  * Generates  a Dendrogram for the given graph g using the Girvan-Newman
@@ -20,9 +20,13 @@
  */
 Dendrogram GirvanNewman(Graph g) {
 	// Initiate a memory for pointer Dendrogram d.
-	Dendrogram d = malloc(sizeof(DNode));
+	Dendrogram d = newDendrogram(-1);
 
-	/*
+	EdgeValues evs = edgeBetweennessCentrality(g);
+	// Initiate a array of vertex to store data.
+	Vertex *componentOf = malloc(evs.numNodes * sizeof(Vertex));
+	int src = -1, dest = -1;
+	Vertex parent = -1;
 	// 4. Repeat Steps 2 and 3 until no edges remain.
 	while (GraphNumVertices(g) != 0) {
 		// 1. Calculate the edge betweenness of all edges in the network.
@@ -32,8 +36,8 @@ Dendrogram GirvanNewman(Graph g) {
 
 		// 2. Remove the edge(s) with the highest edge betweenness.
 		// Find the highest edge betweenness first.
-		double max = 0;
-		int src = -1, dest = -1;
+		double max = -1;
+		int srcPrev = src, destPrev = dest;
 		for (int i = 0; i < evs.numNodes; i++) {
 			for (int j = 0; j < evs.numNodes; j++) {
 				if (evs.values[i][j] > max) {
@@ -43,71 +47,97 @@ Dendrogram GirvanNewman(Graph g) {
 				}
 			}
 		}
-		if (src == -1 && dest == -1) {
+		// for (int i = 0; i < evs.numNodes; i++) {
+		// 	for (int j = 0; j < evs.numNodes; j++) {
+		// 		printf("%f ", evs.values[i][j]);
+		// 	}
+		// 	printf("\n");
+		// }
+		if (max == -1) {
 			break;
 		}
+
 		// Remove it.
 		GraphRemoveEdge(g, src, dest);
+		// To check there is no betweenness is >= max, remove if yes.
+		for (int i = 0; i < evs.numNodes; i++) {
+			for (int j = 0; j < evs.numNodes; j++) {
+				if (evs.values[i][j] >= max && i != src && j != dest) {
+					GraphRemoveEdge(g, i, j);
+				}
+			}
+		}
 
 		// Algorithm to assign vertices to connected component.
 		// componentOf[v] = 1, v is vertex, and 1 means first component.
-
-		// Initiate a array of vertex to store data.
-		Vertex *componentOf = malloc(evs.numNodes * sizeof(Vertex));
-		
 		for (int v = 0; v < evs.numNodes; v++) {
 			componentOf[v] = -1;
 		}
 		int componentId = 0;
 		for (int i = 0; i < evs.numNodes; i++) {
 			if (componentOf[i] == -1) {
-				dfsSearch(g, componentOf, i, componentId);
+				bfsSearch(g, componentOf, i, componentId);
 				componentId++;
 			}
 		}
+		
+		// for (int k = 0; k < evs.numNodes; k++) {
+		// 	printf("componentOf[%d] = %d\n", k, componentOf[k]);
+		// }
+		// Check the src and dest belong to which previous group.
+		// INCORRECT!!!!!
+		if (componentOf[srcPrev] == componentOf[src]) {
+			parent = srcPrev;
+		}
+		else if (componentOf[destPrev] == componentOf[dest]) {
+			parent = destPrev;
+		}
 
-		// Now the *componentOf are completed, 
-		// We put it into the Dendrogram.
-		// We started from the src
-		int level = 0;
+
+		// Start of d
+		if (parent == -1) {
+			d->left = newDendrogram(src);
+			d->right = newDendrogram(dest);
+		}
+		else {
+			d = treeSearchAndInsert(d, parent, src, dest);
+		}
+		
 		
 	}
-	*/
-	d->left = malloc(sizeof(DNode));
-	d->right = malloc(sizeof(DNode));
-	d->right->vertex = 1;
-	d->left->left = malloc(sizeof(DNode));
-	d->left->left->vertex = 0;
-	d->left->right = malloc(sizeof(DNode));
-	d->left->right->vertex = 2;
 
 	return d;
 }
-/*
-static void dfsSearch(Graph g, Vertex *componentOf, Vertex v, int componentId) {
+
+static void bfsSearch(Graph g, Vertex *componentOf, Vertex v, int componentId) {
 	componentOf[v] = componentId;
 	AdjList listOfOutgoing = GraphOutIncident(g, v);
 	while (listOfOutgoing != NULL) {
 		if (componentOf[listOfOutgoing->v] == -1) {
-			dfsSearch(g, componentOf, listOfOutgoing->v, 
+			bfsSearch(g, componentOf, listOfOutgoing->v, 
 			componentId);
 		}
+		// printf("Vertex %d has link of %d\n", v, listOfOutgoing->v);
 		listOfOutgoing = listOfOutgoing->next;
 	}
 }
 
-static Dendrogram dendrogramInsert(Dendrogram d, int v, int level, int componentId) {
+// Unable to get into deeper level
+static Dendrogram treeSearchAndInsert(Dendrogram d, Vertex searchValue, Vertex src, Vertex dest) {
 	if (d == NULL) {
-		return newDendrogram(NULL);
+		return d;
 	}
-	// compnentId/2 < Level <= componentId
-	while (level > componentId || level <= (componentId / 2)) {
-		d->left = dendrogramInsert(d->left, v, level, componentId);
-		d->right = dendrogramInsert(d->right, v, level, componentId);
-		level++;
+
+	if (d->vertex == searchValue) {
+		d->left = newDendrogram(src);
+		d->right = newDendrogram(dest);
+		return d;
 	}
+	d->left = treeSearchAndInsert(d->left, searchValue, src, dest);
+	d->right = treeSearchAndInsert(d->right, searchValue, src, dest);
 	return d;
 }
+
 
 static Dendrogram newDendrogram(int v) {
 	Dendrogram new = malloc(sizeof(DNode));
@@ -117,7 +147,7 @@ static Dendrogram newDendrogram(int v) {
 	return new;
 }
 
-*/
+
 
 
 
