@@ -64,6 +64,8 @@ Dendrogram GirvanNewman(Graph g) {
 			for (int j = 0; j < evs.numNodes; j++) {
 				if (evs.values[i][j] >= max && i != src && j != dest) {
 					GraphRemoveEdge(g, i, j);
+					src = i;
+					dest = j;
 				}
 			}
 		}
