@@ -14,6 +14,8 @@ static Dendrogram treeSearchAndInsert(Dendrogram d, Vertex searchValue, Vertex s
 static Dendrogram newDendrogram(int v);
 static int calculateComponentSeparation(Graph g, Vertex *componentOf, 
 int numOfNodes);
+static void storingParentVertex(Vertex *componentOf, Vertex *parentOf, 
+int numOfNodes, Vertex src, Vertex dest);
 /*
  * Generates  a Dendrogram for the given graph g using the Girvan-Newman
  * algorithm.
@@ -102,22 +104,29 @@ Dendrogram GirvanNewman(Graph g) {
 		}
 
 
-		int srcComponent = componentOf[src];
-		int destComponent = componentOf[dest];
-		for (int i = 0; i < evs.numNodes; i++) {
-			if (componentOf[i] == srcComponent) {
-				parentOf[i] = src;
-			}
-			else if (componentOf[i] == destComponent) {
-				parentOf[i] = dest;
-			}
-			// End the whole programme if compoentOf[i] == parentOf[i] for all
-		}
+		storingParentVertex(componentOf, parentOf, evs.numNodes, src, dest);
 			
 
 	}
 
 	return d;
+}
+
+
+
+static void storingParentVertex(Vertex *componentOf, Vertex *parentOf, 
+int numOfNodes, Vertex src, Vertex dest) {
+	int srcComponent = componentOf[src];
+	int destComponent = componentOf[dest];
+	for (int i = 0; i < numOfNodes; i++) {
+		if (componentOf[i] == srcComponent) {
+			parentOf[i] = src;
+		}
+		else if (componentOf[i] == destComponent) {
+			parentOf[i] = dest;
+		}
+		// End the whole programme if compoentOf[i] == parentOf[i] for all
+	}
 }
 
 static void bfsSearch(Graph g, Vertex *componentOf, Vertex v, int componentId) {
