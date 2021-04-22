@@ -1,5 +1,6 @@
 // Floyd Warshall ADT interface
 // COMP2521 Assignment 2
+// Written by Zheng Luo (z5206267@ad.unsw.edu.au) on April/2021
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -8,9 +9,8 @@
 #include "FloydWarshall.h"
 #include "Graph.h"
 
-
 static ShortestPaths initiateSpsStruct(Graph g);
-static int findNext(ShortestPaths sps, int src, int dest);
+static Vertex findNext(ShortestPaths sps, int src, int dest);
 /**
  * Finds all shortest paths between all pairs of nodes.
  * 
@@ -25,11 +25,11 @@ ShortestPaths FloydWarshall(Graph g) {
 	ShortestPaths sps = initiateSpsStruct(g);
 
 	// First, fill in the value of dist[v][v] itself = 0.
-	for (int v = 0; v < sps.numNodes; v++) {
+	for (Vertex v = 0; v < sps.numNodes; v++) {
 		sps.dist[v][v] = 0;
 	} 
 	// Second, fill in the neighbour distance.
-	for (int v = 0; v < sps.numNodes; v++) {
+	for (Vertex v = 0; v < sps.numNodes; v++) {
 		AdjList ListOutIncident = GraphOutIncident(g, v);
 		while (ListOutIncident != NULL) {
 			sps.dist[v][ListOutIncident->v] = ListOutIncident->weight;
@@ -40,11 +40,11 @@ ShortestPaths FloydWarshall(Graph g) {
 		}
 	}
 	// Last step, search the shortest path between inter-vertices.
-	for (int k = 0; k < sps.numNodes; k++) {
-		for (int i = 0; i < sps.numNodes; i++) {
-			for (int j = 0; j < sps.numNodes; j++) {
-				if (sps.dist[i][j] > sps.dist[i][k] + sps.dist[k][j]
-				&& sps.dist[i][k] + sps.dist[k][j] > 0) {
+	for (Vertex k = 0; k < sps.numNodes; k++) {
+		for (Vertex i = 0; i < sps.numNodes; i++) {
+			for (Vertex j = 0; j < sps.numNodes; j++) {
+				if (sps.dist[i][j] > sps.dist[i][k] + sps.dist[k][j] && 
+					sps.dist[i][k] + sps.dist[k][j] > 0) {
 					sps.dist[i][j] = sps.dist[i][k] + sps.dist[k][j];	
 					sps.next[i][j] = findNext(sps, i, k);
 				}
@@ -54,24 +54,27 @@ ShortestPaths FloydWarshall(Graph g) {
 	return sps;
 }
 
+// The function initiateSpsStruct takes Graph g as argument,
+// initialise and allocate memories for dist and next in sps,
+// and return ShortestPaths sps.
 static ShortestPaths initiateSpsStruct(Graph g) {
 	ShortestPaths sps;
 	sps.numNodes = GraphNumVertices(g);
 
 	// Implement sps.dist:
 	// An 2d array which shows shortest distance between any two vertices.
-	sps.dist = malloc(sps.numNodes * sizeof(int *));
+	sps.dist = malloc(sps.numNodes * sizeof(Vertex *));
 	// Implement sps.next:
 	// An 2d array which shows next vertex from given vertex to des.
-	sps.next = malloc(sps.numNodes * sizeof(int *));
-	for (int v = 0; v < sps.numNodes; v++) {
-		sps.dist[v] = malloc(sps.numNodes * sizeof(int));
-		sps.next[v] = malloc(sps.numNodes * sizeof(int));
+	sps.next = malloc(sps.numNodes * sizeof(Vertex *));
+	for (Vertex v = 0; v < sps.numNodes; v++) {
+		sps.dist[v] = malloc(sps.numNodes * sizeof(Vertex));
+		sps.next[v] = malloc(sps.numNodes * sizeof(Vertex));
 	}
-	// Set the distance between all as infinity for now.
-	// Set the whole array fill with -1 for now.
-	for (int i = 0; i < sps.numNodes; i++) {
-		for (int j = 0; j < sps.numNodes; j++) {
+	// Set the distance between all as infinity.
+	// Set the next array fill with -1.
+	for (Vertex i = 0; i < sps.numNodes; i++) {
+		for (Vertex j = 0; j < sps.numNodes; j++) {
 			sps.dist[i][j] = INFINITY;
 			sps.next[i][j] = -1;
 		}
@@ -79,7 +82,9 @@ static ShortestPaths initiateSpsStruct(Graph g) {
 	return sps;
 }
 
-static int findNext(ShortestPaths sps, int src, int dest) {
+// This findNext is a recusive function to find dest from src,
+// and return the dest as Vertex when found.
+static Vertex findNext(ShortestPaths sps, Vertex src, Vertex dest) {
 	if (sps.next[src][dest] == dest) {
 		return dest;
 	}
@@ -96,8 +101,8 @@ static int findNext(ShortestPaths sps, int src, int dest) {
  * may choose not to implement this function.
  */
 void showShortestPaths(ShortestPaths sps) {
-	for (int i = 0; i < sps.numNodes; i++) {
-		for (int j = 0; j < sps.numNodes; j++) {
+	for (Vertex i = 0; i < sps.numNodes; i++) {
+		for (Vertex j = 0; j < sps.numNodes; j++) {
 			if (sps.dist[i][j] != INFINITY) {
 				printf("From %d to %d has the shortest distance of %d\n", 
 				i, j, sps.dist[i][j]);
@@ -105,8 +110,8 @@ void showShortestPaths(ShortestPaths sps) {
 			
 		}
 	}
-	for (int i = 0; i < sps.numNodes; i++) {
-		for (int j = 0; j < sps.numNodes; j++) {
+	for (Vertex i = 0; i < sps.numNodes; i++) {
+		for (Vertex j = 0; j < sps.numNodes; j++) {
 			if (sps.next[i][j] != -1) {
 				printf("From %d to %d has the next vertex of %d\n", 
 				i, j, sps.next[i][j]);
@@ -122,7 +127,7 @@ void showShortestPaths(ShortestPaths sps) {
  */
 void freeShortestPaths(ShortestPaths sps) {
 	// Free rows for both dist and next first.
-	for (int i = 0; i < sps.numNodes; i++) {
+	for (Vertex i = 0; i < sps.numNodes; i++) {
 		free(sps.dist[i]);
 		free(sps.next[i]);
 	}

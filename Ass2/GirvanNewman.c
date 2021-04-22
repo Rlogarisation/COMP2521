@@ -1,5 +1,6 @@
 // Girvan-Newman Algorithm for community discovery
 // COMP2521 Assignment 2
+// Written by Zheng Luo (z5206267@ad.unsw.edu.au) on April/2021
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -36,7 +37,7 @@ Dendrogram GirvanNewman(Graph g) {
 	Vertex *componentOf = malloc(evs.numNodes * sizeof(Vertex));
 	// Initiate an array to store the imformation (vertex) of its parent.
 	Vertex *parentOf = malloc(evs.numNodes * sizeof(Vertex));
-	for (int i = 0; i < evs.numNodes; i++) {
+	for (Vertex i = 0; i < evs.numNodes; i++) {
 		parentOf[i] = -1;
 	}
 	int componentIdPrev = 1, componentId = 0;
@@ -52,8 +53,8 @@ Dendrogram GirvanNewman(Graph g) {
 		// 2. Remove the edge(s) with the highest edge betweenness.
 		// Find the highest edge betweenness first.
 		double max = -1;
-		for (int i = 0; i < evs.numNodes; i++) {
-			for (int j = 0; j < evs.numNodes; j++) {
+		for (Vertex i = 0; i < evs.numNodes; i++) {
+			for (Vertex j = 0; j < evs.numNodes; j++) {
 				if (evs.values[i][j] > max) {
 					max = evs.values[i][j];
 					src = i;
@@ -80,8 +81,8 @@ Dendrogram GirvanNewman(Graph g) {
 		// If number of components did not increased after edge removal,
 		// then remove the edge with same betweenness until different.
 		while (componentId == componentIdPrev) {
-			for (int i = 0; i < evs.numNodes; i++) {
-				for (int j = 0; j < evs.numNodes; j++) {
+			for (Vertex i = 0; i < evs.numNodes; i++) {
+				for (Vertex j = 0; j < evs.numNodes; j++) {
 					if (evs.values[i][j] >= max && i != src && j != dest) {
 						GraphRemoveEdge(g, i, j);
 						src = i;
@@ -179,12 +180,15 @@ static void bfsSearch(Graph g, Vertex *componentOf,
 	}
 }
 
+// treeSearchAndInsert takes in a searchValue, 
+// and search for this value in the Dendrogram d.
+// Insert src into the left and dest into the right at found Dendrogram.
+// Return Dendrogram d regardless of found or not,
 static Dendrogram treeSearchAndInsert(Dendrogram d, Vertex searchValue, 
 									  Vertex src, Vertex dest) {
 	if (d == NULL) {
 		return d;
 	}
-
 	if (d->vertex == searchValue) {
 		d->left = newDendrogram(src);
 		d->right = newDendrogram(dest);
@@ -195,6 +199,20 @@ static Dendrogram treeSearchAndInsert(Dendrogram d, Vertex searchValue,
 	return d;
 }
 
+// This a void type function, which stores the parent of each index, 
+// and used to locate the proper inserting position for 
+// function treeSearchAndInsert
+// The storingParentVertex function can be explain in the same example:
+// 0->1->2->3->4->5->6->7
+// the link break between 3 and 4,
+// 0	1	2	3	4	5	6	7
+// -1	-1	-1	-1	-1	-1	-1	-1
+// This array parentOf indicates the parent of its index belongs to.
+// At the moment is -1 (HEAD).
+// If the link then break between 1 and 2,
+// 0	1	2	3	4	5	6	7
+// 3	3	3	3	4	4	4	4
+// And the function is purposely designed to be 1 step slower.
 static void storingParentVertex(Vertex *componentOf, Vertex *parentOf, 
 int numOfNodes, Vertex src, Vertex dest) {
 	int srcComponent = componentOf[src];
@@ -206,22 +224,8 @@ int numOfNodes, Vertex src, Vertex dest) {
 		else if (componentOf[i] == destComponent) {
 			parentOf[i] = dest;
 		}
-		// End the whole programme if compoentOf[i] == parentOf[i] for all
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * Frees all memory associated with the given Dendrogram  structure.  We
