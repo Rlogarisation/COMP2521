@@ -105,9 +105,10 @@ Dendrogram GirvanNewman(Graph g) {
 
 
 		storingParentVertex(componentOf, parentOf, evs.numNodes, src, dest);
-			
-
 	}
+
+	free(componentOf);
+	free(parentOf);
 
 	return d;
 }
