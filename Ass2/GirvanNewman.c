@@ -4,18 +4,21 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 
 #include "CentralityMeasures.h"
 #include "GirvanNewman.h"
 #include "Graph.h"
-static void bfsSearch(Graph g, Vertex *componentOf, Vertex v, int componentId);
-static Dendrogram treeSearchAndInsert(Dendrogram d, Vertex searchValue, Vertex src, Vertex dest);
+
+#define HEAD -1
+
 static Dendrogram newDendrogram(int v);
 static int calculateComponentSeparation(Graph g, Vertex *componentOf, 
 int numOfNodes);
+static void bfsSearch(Graph g, Vertex *componentOf, Vertex v, int componentId);
+static Dendrogram treeSearchAndInsert(Dendrogram d, Vertex searchValue, Vertex src, Vertex dest);
 static void storingParentVertex(Vertex *componentOf, Vertex *parentOf, 
 int numOfNodes, Vertex src, Vertex dest);
+
 /*
  * Generates  a Dendrogram for the given graph g using the Girvan-Newman
  * algorithm.
@@ -23,21 +26,21 @@ int numOfNodes, Vertex src, Vertex dest);
  * The function returns a 'Dendrogram' structure.
  */
 Dendrogram GirvanNewman(Graph g) {
-	// Initiate a memory for pointer Dendrogram d.
-	Dendrogram d = newDendrogram(-1);
 	// 1. Calculate the edge betweenness of all edges in the network.
 	EdgeValues evs = edgeBetweennessCentrality(g);
-	// Initiate a array of vertex to store data.
-	Vertex *componentOf = malloc(evs.numNodes * sizeof(Vertex));
-	int src = -1, dest = -1;
-	Vertex parent = -1;
 
+	// Initiate certain memory for pointer Dendrogram d.
+	Dendrogram d = newDendrogram(HEAD);
+	// Initiate an array of vertex to store component catogory.
+	Vertex *componentOf = malloc(evs.numNodes * sizeof(Vertex));
 	// Initiate an array to store the imformation (vertex) of its parent.
 	Vertex *parentOf = malloc(evs.numNodes * sizeof(Vertex));
 	for (int i = 0; i < evs.numNodes; i++) {
 		parentOf[i] = -1;
 	}
+	Vertex src = -1, dest = -1;
 	
+
 	// 4. Repeat Steps 2 and 3 until no edges remain.
 	while (GraphNumVertices(g) != 0) {
 		// 3. Recalculate the edge betweenness 
@@ -56,16 +59,17 @@ Dendrogram GirvanNewman(Graph g) {
 				}
 			}
 		}
+		// Exit the while loop if no edge betweenness > 0
 		if (max == -1) {
 			break;
 		}
 
-		// Remove it.
+		// Remove selected edges.
 		GraphRemoveEdge(g, src, dest);
 		
 
 		// Algorithm to assign vertices to connected component.
-		// componentOf[v] = 1, v is vertex, and 1 means first component.
+		// e.g. componentOf[v] = 1, v is vertex, and 1 means first component.
 		int componentId = calculateComponentSeparation(g, componentOf, evs.numNodes);
 
 		// Only 1 component
@@ -83,27 +87,20 @@ Dendrogram GirvanNewman(Graph g) {
 			componentId = calculateComponentSeparation(g, componentOf, evs.numNodes);
 		}
 		
-			
-
-		// Check the src and dest belong to which previous group.
-		// When not in the first loop
-		assert(parentOf[src] == parentOf[dest]);
-		parent = parentOf[src];
-	
-		// Start of d
-		if (parent == -1) {
+		// Insert src and dest into required location.
+		if (parentOf[src] == HEAD) {
 			d->left = newDendrogram(src);
 			d->right = newDendrogram(dest);
 		}
 		else {
-			d = treeSearchAndInsert(d, parent, src, dest);
+			d = treeSearchAndInsert(d, parentOf[src], src, dest);
 		}
-
+		// Exit the loop if the number of components are enough.
 		if (componentId == evs.numNodes) {
 			break;
 		}
 
-
+		// Update the parents of vertices.
 		storingParentVertex(componentOf, parentOf, evs.numNodes, src, dest);
 	}
 
@@ -114,20 +111,27 @@ Dendrogram GirvanNewman(Graph g) {
 }
 
 
+static Dendrogram newDendrogram(int v) {
+	Dendrogram new = malloc(sizeof(DNode));
+	new->vertex = v;
+	new->left = NULL;
+	new->right = NULL;
+	return new;
+}
 
-static void storingParentVertex(Vertex *componentOf, Vertex *parentOf, 
-int numOfNodes, Vertex src, Vertex dest) {
-	int srcComponent = componentOf[src];
-	int destComponent = componentOf[dest];
-	for (int i = 0; i < numOfNodes; i++) {
-		if (componentOf[i] == srcComponent) {
-			parentOf[i] = src;
-		}
-		else if (componentOf[i] == destComponent) {
-			parentOf[i] = dest;
-		}
-		// End the whole programme if compoentOf[i] == parentOf[i] for all
+static int calculateComponentSeparation(Graph g, Vertex *componentOf, 
+int numOfNodes) {
+	for (int v = 0; v < numOfNodes; v++) {
+		componentOf[v] = -1;
 	}
+	int componentId = 0;
+	for (int i = 0; i < numOfNodes; i++) {
+		if (componentOf[i] == -1) {
+			bfsSearch(g, componentOf, i, componentId);
+			componentId++;
+		}
+	}
+	return componentId;
 }
 
 static void bfsSearch(Graph g, Vertex *componentOf, Vertex v, int componentId) {
@@ -165,29 +169,29 @@ static Dendrogram treeSearchAndInsert(Dendrogram d, Vertex searchValue, Vertex s
 	return d;
 }
 
-
-static Dendrogram newDendrogram(int v) {
-	Dendrogram new = malloc(sizeof(DNode));
-	new->vertex = v;
-	new->left = NULL;
-	new->right = NULL;
-	return new;
-}
-
-static int calculateComponentSeparation(Graph g, Vertex *componentOf, 
-int numOfNodes) {
-	for (int v = 0; v < numOfNodes; v++) {
-		componentOf[v] = -1;
-	}
-	int componentId = 0;
+static void storingParentVertex(Vertex *componentOf, Vertex *parentOf, 
+int numOfNodes, Vertex src, Vertex dest) {
+	int srcComponent = componentOf[src];
+	int destComponent = componentOf[dest];
 	for (int i = 0; i < numOfNodes; i++) {
-		if (componentOf[i] == -1) {
-			bfsSearch(g, componentOf, i, componentId);
-			componentId++;
+		if (componentOf[i] == srcComponent) {
+			parentOf[i] = src;
 		}
+		else if (componentOf[i] == destComponent) {
+			parentOf[i] = dest;
+		}
+		// End the whole programme if compoentOf[i] == parentOf[i] for all
 	}
-	return componentId;
 }
+
+
+
+
+
+
+
+
+
 
 
 
