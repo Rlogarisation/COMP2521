@@ -22,12 +22,13 @@ static Dendrogram newDendrogram(int v);
 Dendrogram GirvanNewman(Graph g) {
 	// Initiate a memory for pointer Dendrogram d.
 	Dendrogram d = newDendrogram(-1);
-
+	// 1. Calculate the edge betweenness of all edges in the network.
 	EdgeValues evs = edgeBetweennessCentrality(g);
 	// Initiate a array of vertex to store data.
 	Vertex *componentOf = malloc(evs.numNodes * sizeof(Vertex));
 	int src = -1, dest = -1;
 	Vertex parent = -1;
+	int componentId = 0;
 
 	// Initiate an array to store the imformation (vertex) of its parent.
 	Vertex *parentOf = malloc(evs.numNodes * sizeof(Vertex));
@@ -37,13 +38,10 @@ Dendrogram GirvanNewman(Graph g) {
 	
 	// 4. Repeat Steps 2 and 3 until no edges remain.
 	while (GraphNumVertices(g) != 0) {
-		// 1. Calculate the edge betweenness of all edges in the network.
 		// 3. Recalculate the edge betweenness 
 		// of all edges affected by the removal.
 		EdgeValues evs = edgeBetweennessCentrality(g);
-
 		
-
 		// 2. Remove the edge(s) with the highest edge betweenness.
 		// Find the highest edge betweenness first.
 		double max = -1;
@@ -70,71 +68,100 @@ Dendrogram GirvanNewman(Graph g) {
 		for (int v = 0; v < evs.numNodes; v++) {
 			componentOf[v] = -1;
 		}
-		int componentId = 0;
+		componentId = 0;
 		for (int i = 0; i < evs.numNodes; i++) {
 			if (componentOf[i] == -1) {
 				bfsSearch(g, componentOf, i, componentId);
 				componentId++;
 			}
 		}
+		//TEST
+		// printf("src = %d, dest = %d\n", src, dest);
+		// printf("ComponentOf: ");
+		// for (int i = 0; i < evs.numNodes; i++) {
+		// 	printf("%d ", componentOf[i]);
+		// }
+		// printf("\nparentOf: ");
+		// for (int i = 0; i < evs.numNodes; i++) {
+		// 	printf("%d ", parentOf[i]);
+		// }
+		// printf("\n");
 		// Only 1 component
-		if (componentId != 1) {
-
-	
-			//TEST
-			printf("src = %d, dest = %d\n", src, dest);
-			printf("ComponentOf: ");
+		if (componentId == 1) {
+			// To check there is no betweenness is >= max, remove if yes.
 			for (int i = 0; i < evs.numNodes; i++) {
-				printf("%d ", componentOf[i]);
-			}
-			printf("\nparentOf: ");
-			for (int i = 0; i < evs.numNodes; i++) {
-				printf("%d ", parentOf[i]);
-			}
-			printf("\n");
-
-			// Check the src and dest belong to which previous group.
-			// When not in the first loop
-			assert(parentOf[src] == parentOf[dest]);
-			parent = parentOf[src];
-		
-			// Start of d
-			if (parent == -1) {
-				d->left = newDendrogram(src);
-				d->right = newDendrogram(dest);
-			}
-			else {
-				d = treeSearchAndInsert(d, parent, src, dest);
-			}
-
-			if (componentId == evs.numNodes) {
-				break;
-			}
-
-
-			int srcComponent = componentOf[src];
-			int destComponent = componentOf[dest];
-			for (int i = 0; i < evs.numNodes; i++) {
-				if (componentOf[i] == srcComponent) {
-					parentOf[i] = src;
+				for (int j = 0; j < evs.numNodes; j++) {
+					if (evs.values[i][j] >= max && i != src && j != dest) {
+						GraphRemoveEdge(g, i, j);
+						src = i;
+						dest = j;
+					}
 				}
-				else if (componentOf[i] == destComponent) {
-					parentOf[i] = dest;
+			}
+			// Algorithm to assign vertices to connected component.
+			// componentOf[v] = 1, v is vertex, and 1 means first component.
+			for (int v = 0; v < evs.numNodes; v++) {
+				componentOf[v] = -1;
+			}
+			componentId = 0;
+			for (int i = 0; i < evs.numNodes; i++) {
+				if (componentOf[i] == -1) {
+					bfsSearch(g, componentOf, i, componentId);
+					componentId++;
 				}
-				// End the whole programme if compoentOf[i] == parentOf[i] for all
 			}
-			//TEST
-			printf("src = %d, dest = %d\n", src, dest);
-			printf("ComponentOf: ");
-			for (int i = 0; i < evs.numNodes; i++) {
-				printf("%d ", componentOf[i]);
-			}
-			printf("\nparentOf: ");
-			for (int i = 0; i < evs.numNodes; i++) {
-				printf("%d ", parentOf[i]);
-			}
-			printf("\n-----------------------------------------\n");
 		}
+		
+			
+
+		// Check the src and dest belong to which previous group.
+		// When not in the first loop
+		assert(parentOf[src] == parentOf[dest]);
+		parent = parentOf[src];
+	
+		// Start of d
+		if (parent == -1) {
+			d->left = newDendrogram(src);
+			d->right = newDendrogram(dest);
+		}
+		else {
+			d = treeSearchAndInsert(d, parent, src, dest);
+		}
+
+		if (componentId == evs.numNodes) {
+			break;
+		}
+
+
+		int srcComponent = componentOf[src];
+		int destComponent = componentOf[dest];
+		for (int i = 0; i < evs.numNodes; i++) {
+			if (componentOf[i] == srcComponent) {
+				parentOf[i] = src;
+			}
+			else if (componentOf[i] == destComponent) {
+				parentOf[i] = dest;
+			}
+			// End the whole programme if compoentOf[i] == parentOf[i] for all
+		}
+			
+		
+		
+		//TEST
+		// printf("src = %d, dest = %d\n", src, dest);
+		// printf("ComponentOf: ");
+		// for (int i = 0; i < evs.numNodes; i++) {
+		// 	printf("%d ", componentOf[i]);
+		// }
+		// printf("\nparentOf: ");
+		// for (int i = 0; i < evs.numNodes; i++) {
+		// 	printf("%d ", parentOf[i]);
+		// }
+		// printf("\n-----------------------------------------\n");
+		
+		
+
+			
 		
 	}
 

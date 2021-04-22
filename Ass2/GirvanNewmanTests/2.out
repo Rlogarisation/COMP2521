@@ -1,15 +1,5 @@
------------------------------------------
 0: {0, 1, 2}
-ComponentOf: 0 1 1 
-ComponentOf: 0 1 1 
-ComponentOf: 0 1 2 
-parentOf: -1 -1 -1 
-parentOf: 0 1 1 
-parentOf: 0 1 1 
-src = 0, dest = 1
-src = 0, dest = 1
-src = 2, dest = 1
-1: {0} (leaf)
-1: {1, 2}
+1: {0, 1}
+1: {2} (leaf)
+2: {0} (leaf)
 2: {1} (leaf)
-2: {2} (leaf)
