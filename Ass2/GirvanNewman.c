@@ -34,7 +34,6 @@ Dendrogram GirvanNewman(Graph g) {
 	for (int i = 0; i < evs.numNodes; i++) {
 		parentOf[i] = -1;
 	}
-
 	
 	// 4. Repeat Steps 2 and 3 until no edges remain.
 	while (GraphNumVertices(g) != 0) {
@@ -63,6 +62,8 @@ Dendrogram GirvanNewman(Graph g) {
 
 		// Remove it.
 		GraphRemoveEdge(g, src, dest);
+		
+			
 
 		// Algorithm to assign vertices to connected component.
 		// componentOf[v] = 1, v is vertex, and 1 means first component.
@@ -76,36 +77,64 @@ Dendrogram GirvanNewman(Graph g) {
 				componentId++;
 			}
 		}
+		// Only 1 component
+		if (componentId != 1) {
 
-
-		
-		// Check the src and dest belong to which previous group.
-		// When not in the first loop
-		assert(parentOf[src] == parentOf[dest]);
-		parent = parentOf[src];
 	
-		// Start of d
-		if (parent == -1) {
-			d->left = newDendrogram(src);
-			d->right = newDendrogram(dest);
-		}
-		else {
-			d = treeSearchAndInsert(d, parent, src, dest);
-		}
-
-
-		int srcComponent = componentOf[src];
-		int destComponent = componentOf[dest];
-		for (int i = 0; i < evs.numNodes; i++) {
-			if (componentOf[i] == srcComponent) {
-				parentOf[i] = src;
+			//TEST
+			printf("src = %d, dest = %d\n", src, dest);
+			printf("ComponentOf: ");
+			for (int i = 0; i < evs.numNodes; i++) {
+				printf("%d ", componentOf[i]);
 			}
-			else if (componentOf[i] == destComponent) {
-				parentOf[i] = dest;
+			printf("\nparentOf: ");
+			for (int i = 0; i < evs.numNodes; i++) {
+				printf("%d ", parentOf[i]);
 			}
-			// End the whole programme if compoentOf[i] == parentOf[i] for all
-		}
+			printf("\n");
+
+			// Check the src and dest belong to which previous group.
+			// When not in the first loop
+			assert(parentOf[src] == parentOf[dest]);
+			parent = parentOf[src];
 		
+			// Start of d
+			if (parent == -1) {
+				d->left = newDendrogram(src);
+				d->right = newDendrogram(dest);
+			}
+			else {
+				d = treeSearchAndInsert(d, parent, src, dest);
+			}
+
+			if (componentId == evs.numNodes) {
+				break;
+			}
+
+
+			int srcComponent = componentOf[src];
+			int destComponent = componentOf[dest];
+			for (int i = 0; i < evs.numNodes; i++) {
+				if (componentOf[i] == srcComponent) {
+					parentOf[i] = src;
+				}
+				else if (componentOf[i] == destComponent) {
+					parentOf[i] = dest;
+				}
+				// End the whole programme if compoentOf[i] == parentOf[i] for all
+			}
+			//TEST
+			printf("src = %d, dest = %d\n", src, dest);
+			printf("ComponentOf: ");
+			for (int i = 0; i < evs.numNodes; i++) {
+				printf("%d ", componentOf[i]);
+			}
+			printf("\nparentOf: ");
+			for (int i = 0; i < evs.numNodes; i++) {
+				printf("%d ", parentOf[i]);
+			}
+			printf("\n-----------------------------------------\n");
+		}
 		
 	}
 
@@ -115,12 +144,20 @@ Dendrogram GirvanNewman(Graph g) {
 static void bfsSearch(Graph g, Vertex *componentOf, Vertex v, int componentId) {
 	componentOf[v] = componentId;
 	AdjList listOfOutgoing = GraphOutIncident(g, v);
+	AdjList listOfIncoming = GraphInIncident(g, v);
 	while (listOfOutgoing != NULL) {
 		if (componentOf[listOfOutgoing->v] == -1) {
 			bfsSearch(g, componentOf, listOfOutgoing->v, 
 			componentId);
 		}
 		listOfOutgoing = listOfOutgoing->next;
+	}
+	while (listOfIncoming != NULL) {
+		if (componentOf[listOfIncoming->v] == -1) {
+			bfsSearch(g, componentOf, listOfIncoming->v, 
+			componentId);
+		}
+		listOfIncoming = listOfIncoming->next;
 	}
 }
 
