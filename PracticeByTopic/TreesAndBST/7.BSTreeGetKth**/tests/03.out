@@ -1,0 +1,37 @@
+Enter the preorder traversal of the BST: Tree:
+
+2
+ \
+  5
+   \
+    8
+   / \
+  7   9
+
+Enter k: This is counter: 0 and value is 2
+For k = 0, BSTreeGetKth returned 2
+Enter k: This is counter: 0 and value is 2
+This is counter: 0 and value is 5
+This is counter: 0 and value is 7
+This is counter: 0 and value is 8
+This is counter: 0 and value is 9
+For k = 1, BSTreeGetKth returned 0
+Enter k: This is counter: 0 and value is 2
+This is counter: 0 and value is 5
+This is counter: 0 and value is 7
+This is counter: 0 and value is 8
+This is counter: 0 and value is 9
+For k = 2, BSTreeGetKth returned 0
+Enter k: This is counter: 0 and value is 2
+This is counter: 0 and value is 5
+This is counter: 0 and value is 7
+This is counter: 0 and value is 8
+This is counter: 0 and value is 9
+For k = 3, BSTreeGetKth returned 0
+Enter k: This is counter: 0 and value is 2
+This is counter: 0 and value is 5
+This is counter: 0 and value is 7
+This is counter: 0 and value is 8
+This is counter: 0 and value is 9
+For k = 4, BSTreeGetKth returned 0
+Enter k: 

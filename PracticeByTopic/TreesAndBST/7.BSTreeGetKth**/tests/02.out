@@ -1,0 +1,63 @@
+Enter the preorder traversal of the BST: Tree:
+
+   8
+  / \
+ /   \
+2    12
+ \     \
+  5    13
+ / \
+4   7
+
+Enter k: This is counter: 0 and value is 2
+This is counter: 0 and value is 8
+For k = 0, BSTreeGetKth returned 8
+Enter k: This is counter: 0 and value is 2
+This is counter: 0 and value is 4
+This is counter: 0 and value is 5
+This is counter: 0 and value is 7
+This is counter: 0 and value is 8
+This is counter: 0 and value is 12
+This is counter: 0 and value is 13
+For k = 1, BSTreeGetKth returned 0
+Enter k: This is counter: 0 and value is 2
+This is counter: 0 and value is 4
+This is counter: 0 and value is 5
+This is counter: 0 and value is 7
+This is counter: 0 and value is 8
+This is counter: 0 and value is 12
+This is counter: 0 and value is 13
+For k = 2, BSTreeGetKth returned 0
+Enter k: This is counter: 0 and value is 2
+This is counter: 0 and value is 4
+This is counter: 0 and value is 5
+This is counter: 0 and value is 7
+This is counter: 0 and value is 8
+This is counter: 0 and value is 12
+This is counter: 0 and value is 13
+For k = 3, BSTreeGetKth returned 0
+Enter k: This is counter: 0 and value is 2
+This is counter: 0 and value is 4
+This is counter: 0 and value is 5
+This is counter: 0 and value is 7
+This is counter: 0 and value is 8
+This is counter: 0 and value is 12
+This is counter: 0 and value is 13
+For k = 4, BSTreeGetKth returned 0
+Enter k: This is counter: 0 and value is 2
+This is counter: 0 and value is 4
+This is counter: 0 and value is 5
+This is counter: 0 and value is 7
+This is counter: 0 and value is 8
+This is counter: 0 and value is 12
+This is counter: 0 and value is 13
+For k = 5, BSTreeGetKth returned 0
+Enter k: This is counter: 0 and value is 2
+This is counter: 0 and value is 4
+This is counter: 0 and value is 5
+This is counter: 0 and value is 7
+This is counter: 0 and value is 8
+This is counter: 0 and value is 12
+This is counter: 0 and value is 13
+For k = 6, BSTreeGetKth returned 0
+Enter k: 

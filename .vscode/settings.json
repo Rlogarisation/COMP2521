@@ -4,6 +4,7 @@
         "stdlib.h": "c",
         "queue.h": "c",
         "avltree.h": "c",
-        "floydwarshall.h": "c"
+        "floydwarshall.h": "c",
+        "list.h": "c"
     }
 }

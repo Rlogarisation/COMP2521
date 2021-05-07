@@ -1,0 +1,7 @@
+Enter the preorder traversal of the BST: Tree:
+
+7
+
+Enter k: This is counter: 0 and value is 7
+For k = 0, BSTreeGetKth returned 7
+Enter k: 
